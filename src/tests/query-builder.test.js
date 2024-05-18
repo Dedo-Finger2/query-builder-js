@@ -121,7 +121,7 @@ describe("QueryBuilder Class", () => {
     const tableName = "fake_table_name";
     const whereProps = {
       name: {
-        value: "fake_name",
+        value: "%fake_name%",
         operator: "LIKE",
       },
       email: {
@@ -138,7 +138,37 @@ describe("QueryBuilder Class", () => {
       .where(whereProps)._query;
 
     expect(query).toBe(
-      "SELECT * FROM fake_table_name WHERE name LIKE 'fake_name',email='fake_email',age=1",
+      "SELECT * FROM fake_table_name WHERE name LIKE '%fake_name%',email='fake_email',age=1",
+    );
+  });
+
+  it("should return a SELECT query string with where clause using any operator when calling queryBuilder.table.select._query", () => {
+    const { queryBuilder } = makeSut();
+    const tableName = "fake_table_name";
+    const whereProps = {
+      name: {
+        value: "fake_name",
+      },
+      email: {
+        value: "fake_email",
+      },
+      age: {
+        value: 1,
+        operator: ">",
+      },
+      fingers: {
+        value: 9,
+        operator: "<=",
+      },
+    };
+
+    const query = queryBuilder
+      .table(tableName)
+      .select()
+      .where(whereProps)._query;
+
+    expect(query).toBe(
+      "SELECT * FROM fake_table_name WHERE name='fake_name',email='fake_email',age > 1,fingers <= 9",
     );
   });
 });
