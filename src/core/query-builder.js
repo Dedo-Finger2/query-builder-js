@@ -35,6 +35,16 @@ export class QueryBuilder {
     return this;
   }
 
+  where(columnValuePairs) {
+    const columns = Object.keys(columnValuePairs);
+    const values = Object.values(columnValuePairs);
+    const whereClause = columns.map((column, index) => {
+      return `${column}='${values[index]}'`;
+    });
+    this.queryString += ` WHERE ${whereClause.join()}`;
+    return this;
+  }
+
   get _table() {
     return this.tableName;
   }
