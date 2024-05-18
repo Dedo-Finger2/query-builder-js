@@ -86,6 +86,12 @@ export class QueryBuilder {
     return this;
   }
 
+  groupBy(columns) {
+    this.queryString += " GROUP BY ";
+    this.queryString += columns.join();
+    return this;
+  }
+
   get _table() {
     return this.tableName;
   }
