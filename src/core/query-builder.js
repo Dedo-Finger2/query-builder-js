@@ -41,7 +41,6 @@ export class QueryBuilder {
    */
   where(columnValuePairs) {
     const columns = Object.keys(columnValuePairs);
-    console.log(columnValuePairs);
     const whereClause = columns.map((column) => {
       const columnValue = columnValuePairs[column].value;
       const isValueANumber = !Number.isNaN(Number(columnValue));
@@ -51,6 +50,14 @@ export class QueryBuilder {
       return `${column}${columnOperator}${isValueANumber ? columnValue : `'${columnValue}'`}`;
     });
     this.queryString += ` WHERE ${whereClause.join(" AND ")}`;
+    return this;
+  }
+
+  orderBy(columnOrientationPairs) {
+    this.queryString += " ORDER BY ";
+    columnOrientationPairs.map((order) => {
+      this.queryString += `${order.column} ${order.orientation.toUpperCase()}`;
+    });
     return this;
   }
 
