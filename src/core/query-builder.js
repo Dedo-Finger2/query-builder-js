@@ -72,7 +72,7 @@ export class QueryBuilder {
         : "=";
       return `${havingObj.field}${conditionOperator}${havingObj.value}`;
     });
-    this.queryString += havingProps.join();
+    this.queryString += havingProps.join(" AND ");
     return this;
   }
 
