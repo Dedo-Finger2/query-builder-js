@@ -81,6 +81,11 @@ export class QueryBuilder {
     return this;
   }
 
+  offset(amount) {
+    this.queryString += ` OFFSET ${amount}`;
+    return this;
+  }
+
   get _table() {
     return this.tableName;
   }
