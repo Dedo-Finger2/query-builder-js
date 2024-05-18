@@ -45,13 +45,10 @@ export class QueryBuilder {
     const whereClause = columns.map((column) => {
       const columnValue = columnValuePairs[column].value;
       const isValueANumber = !Number.isNaN(Number(columnValue));
-      const isOperatorEqualTo =
-        columnValuePairs[column].operator === undefined ||
-        columnValuePairs[column].operator === "=";
-      const columnOperator = isOperatorEqualTo
-        ? columnValuePairs[column].operator
-        : ` ${columnValuePairs[column].operator} `;
-      return `${column}${columnOperator || "="}${isValueANumber ? columnValue : `'${columnValue}'`}`;
+      const columnOperator = columnValuePairs[column].operator
+        ? ` ${columnValuePairs[column].operator} `
+        : "=";
+      return `${column}${columnOperator}${isValueANumber ? columnValue : `'${columnValue}'`}`;
     });
     this.queryString += ` WHERE ${whereClause.join()}`;
     return this;
