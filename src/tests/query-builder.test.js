@@ -88,4 +88,23 @@ describe("QueryBuilder Class", () => {
 
     expect(query).toBe("SELECT * FROM fake_table_name WHERE name='fake_name'");
   });
+
+  it("should return a SELECT query string with multiple where clause when calling queryBuilder.table.select._query", () => {
+    const { queryBuilder } = makeSut();
+    const tableName = "fake_table_name";
+    const whereProps = {
+      name: "fake_name",
+      email: "fake_email",
+      age: 1,
+    };
+
+    const query = queryBuilder
+      .table(tableName)
+      .select()
+      .where(whereProps)._query;
+
+    expect(query).toBe(
+      "SELECT * FROM fake_table_name WHERE name='fake_name',email='fake_email',age=1",
+    );
+  });
 });

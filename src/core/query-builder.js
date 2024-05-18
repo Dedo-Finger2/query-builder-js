@@ -39,7 +39,8 @@ export class QueryBuilder {
     const columns = Object.keys(columnValuePairs);
     const values = Object.values(columnValuePairs);
     const whereClause = columns.map((column, index) => {
-      return `${column}='${values[index]}'`;
+      const isValueANumber = !Number.isNaN(Number(values[index]));
+      return `${column}=${isValueANumber ? values[index] : `'${values[index]}'`}`;
     });
     this.queryString += ` WHERE ${whereClause.join()}`;
     return this;
