@@ -23,8 +23,15 @@ export class QueryBuilder {
     return this;
   }
 
-  select(columns) {
-    this.queryString = `SELECT ${columns.join()} FROM ${this.tableName}`;
+  select(columns = "*") {
+    switch (columns) {
+      case Array.isArray(columns):
+        this.queryString = `SELECT ${columns.join()} FROM ${this.tableName}`;
+        break;
+      default:
+        this.queryString = `SELECT ${columns} FROM ${this.tableName}`;
+        break;
+    }
     return this;
   }
 

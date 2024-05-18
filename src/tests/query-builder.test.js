@@ -64,4 +64,13 @@ describe("QueryBuilder Class", () => {
 
     expect(query).toBe("SELECT id,name,email FROM fake_table_name");
   });
+
+  it("should set columns to * by default using queryBuilder.table.select._query", () => {
+    const { queryBuilder } = makeSut();
+    const tableName = "fake_table_name";
+
+    const query = queryBuilder.table(tableName).select()._query;
+
+    expect(query).toBe("SELECT * FROM fake_table_name");
+  });
 });
