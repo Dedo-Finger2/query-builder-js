@@ -55,9 +55,11 @@ export class QueryBuilder {
 
   orderBy(columnOrientationPairs) {
     this.queryString += " ORDER BY ";
-    columnOrientationPairs.map((order) => {
-      this.queryString += `${order.column} ${order.orientation.toUpperCase()}`;
+    const defaultOrientation = "ASC";
+    const orderByProps = columnOrientationPairs.map((order) => {
+      return `${order.column} ${order?.orientation ? order?.orientation.toUpperCase() : defaultOrientation}`;
     });
+    this.queryString += orderByProps.join();
     return this;
   }
 
