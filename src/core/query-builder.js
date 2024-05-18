@@ -35,12 +35,23 @@ export class QueryBuilder {
     return this;
   }
 
+  /**
+   * TODO: REFACTOR: Does not work the way I wanted.
+   * I hae to say columnOperator || "=" instead of just using the variable
+   */
   where(columnValuePairs) {
     const columns = Object.keys(columnValuePairs);
-    const values = Object.values(columnValuePairs);
-    const whereClause = columns.map((column, index) => {
-      const isValueANumber = !Number.isNaN(Number(values[index]));
-      return `${column}=${isValueANumber ? values[index] : `'${values[index]}'`}`;
+    console.log(columnValuePairs);
+    const whereClause = columns.map((column) => {
+      const columnValue = columnValuePairs[column].value;
+      const isValueANumber = !Number.isNaN(Number(columnValue));
+      const isOperatorEqualTo =
+        columnValuePairs[column].operator === undefined ||
+        columnValuePairs[column].operator === "=";
+      const columnOperator = isOperatorEqualTo
+        ? columnValuePairs[column].operator
+        : ` ${columnValuePairs[column].operator} `;
+      return `${column}${columnOperator || "="}${isValueANumber ? columnValue : `'${columnValue}'`}`;
     });
     this.queryString += ` WHERE ${whereClause.join()}`;
     return this;
