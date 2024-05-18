@@ -38,4 +38,20 @@ describe("QueryBuilder Class", () => {
 
     expect(queryBuilder._table).toBe(tableName);
   });
+
+  it("should return an INSERT query string when calling queryBuilder.table.insert._query", () => {
+    const { queryBuilder } = makeSut();
+    const tableName = "fake_table_name";
+    const insertProps = {
+      name: "fake_name",
+      email: "fake_email",
+      password: "fake_password",
+    };
+
+    const query = queryBuilder.table(tableName).insert(insertProps)._query;
+
+    expect(query).toBe(
+      "INSERT INTO fake_table_name (name,email,password) VALUES ('fake_name','fake_email','fake_password')",
+    );
+  });
 });
