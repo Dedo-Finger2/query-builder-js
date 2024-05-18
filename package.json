@@ -5,6 +5,7 @@
   "type": "module",
   "scripts": {
     "test": "vitest --passWithNoTests",
+    "test:staged": "vitest run",
     "prepare": "husky"
   },
   "keywords": [],
