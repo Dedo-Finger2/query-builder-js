@@ -30,11 +30,12 @@ describe("QueryBuilder Class", () => {
     expect(queryBuilder.client).toBe(queryBuilderProps.client);
   });
 
-  it("should create a new query builder", () => {
-    const { queryBuilder, connectionProps, queryBuilderProps } = makeSut();
+  it("should set the table when calling queryBuilder.table", () => {
+    const { queryBuilder } = makeSut();
+    const tableName = "fake_table_name";
 
-    expect(queryBuilder).toBeInstanceOf(QueryBuilder);
-    expect(queryBuilder.connection.host).toBe(connectionProps.host);
-    expect(queryBuilder.client).toBe(queryBuilderProps.client);
+    queryBuilder.table(tableName);
+
+    expect(queryBuilder._table).toBe(tableName);
   });
 });
