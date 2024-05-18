@@ -112,7 +112,7 @@ describe("QueryBuilder Class", () => {
       .where(whereProps)._query;
 
     expect(query).toBe(
-      "SELECT * FROM fake_table_name WHERE name='fake_name',email='fake_email',age=1",
+      "SELECT * FROM fake_table_name WHERE name='fake_name' AND email='fake_email' AND age=1",
     );
   });
 
@@ -138,7 +138,7 @@ describe("QueryBuilder Class", () => {
       .where(whereProps)._query;
 
     expect(query).toBe(
-      "SELECT * FROM fake_table_name WHERE name LIKE '%fake_name%',email='fake_email',age=1",
+      "SELECT * FROM fake_table_name WHERE name LIKE '%fake_name%' AND email='fake_email' AND age=1",
     );
   });
 
@@ -168,7 +168,7 @@ describe("QueryBuilder Class", () => {
       .where(whereProps)._query;
 
     expect(query).toBe(
-      "SELECT * FROM fake_table_name WHERE name='fake_name',email='fake_email',age > 1,fingers <= 9",
+      "SELECT * FROM fake_table_name WHERE name='fake_name' AND email='fake_email' AND age > 1 AND fingers <= 9",
     );
   });
 });

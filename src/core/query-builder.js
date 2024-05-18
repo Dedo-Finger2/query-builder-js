@@ -50,7 +50,7 @@ export class QueryBuilder {
         : "=";
       return `${column}${columnOperator}${isValueANumber ? columnValue : `'${columnValue}'`}`;
     });
-    this.queryString += ` WHERE ${whereClause.join()}`;
+    this.queryString += ` WHERE ${whereClause.join(" AND ")}`;
     return this;
   }
 
