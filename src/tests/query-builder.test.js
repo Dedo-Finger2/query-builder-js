@@ -54,4 +54,14 @@ describe("QueryBuilder Class", () => {
       "INSERT INTO fake_table_name (name,email,password) VALUES ('fake_name','fake_email','fake_password')",
     );
   });
+
+  it("should return a SELECT query string when calling queryBuilder.table.select._query", () => {
+    const { queryBuilder } = makeSut();
+    const tableName = "fake_table_name";
+    const selectProps = ["id", "name", "email"];
+
+    const query = queryBuilder.table(tableName).select(selectProps)._query;
+
+    expect(query).toBe("SELECT id,name,email FROM fake_table_name");
+  });
 });

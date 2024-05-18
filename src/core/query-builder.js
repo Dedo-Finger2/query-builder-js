@@ -19,7 +19,12 @@ export class QueryBuilder {
   insert(columnValuePairs) {
     const columns = Object.keys(columnValuePairs);
     const values = Object.values(columnValuePairs);
-    this.queryString += `INSERT INTO ${this.tableName} (${columns.join()}) VALUES (${values.map((value) => `'${value}'`).join()})`;
+    this.queryString = `INSERT INTO ${this.tableName} (${columns.join()}) VALUES (${values.map((value) => `'${value}'`).join()})`;
+    return this;
+  }
+
+  select(columns) {
+    this.queryString = `SELECT ${columns.join()} FROM ${this.tableName}`;
     return this;
   }
 
