@@ -63,6 +63,19 @@ export class QueryBuilder {
     return this;
   }
 
+  having(fieldOperationValuePairs) {
+    this.queryString += " HAVING ";
+    const havingProps = fieldOperationValuePairs.map((havingObj) => {
+      console.log(havingObj);
+      const conditionOperator = havingObj.operator
+        ? ` ${havingObj.operator} `
+        : "=";
+      return `${havingObj.field}${conditionOperator}${havingObj.value}`;
+    });
+    this.queryString += havingProps.join();
+    return this;
+  }
+
   get _table() {
     return this.tableName;
   }
