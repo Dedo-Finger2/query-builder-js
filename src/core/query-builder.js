@@ -76,6 +76,11 @@ export class QueryBuilder {
     return this;
   }
 
+  limit(amount) {
+    this.queryString += ` LIMIT ${amount}`;
+    return this;
+  }
+
   get _table() {
     return this.tableName;
   }

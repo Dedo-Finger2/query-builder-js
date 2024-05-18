@@ -287,4 +287,30 @@ describe("QueryBuilder Class", () => {
       "SELECT * FROM fake_table_name WHERE name='fake_name' AND email='fake_email' AND age=1 HAVING COUNT(id) > 1 AND COUNT(name) < 1 AND COUNT(age)=1",
     );
   });
+
+  it("should return a SELECT query string using limit clause on queryBuilder.table.select._query", () => {
+    const { queryBuilder } = makeSut();
+    const tableName = "fake_table_name";
+    const whereProps = {
+      name: {
+        value: "fake_name",
+      },
+      email: {
+        value: "fake_email",
+      },
+      age: {
+        value: 1,
+      },
+    };
+
+    const query = queryBuilder
+      .table(tableName)
+      .select()
+      .where(whereProps)
+      .limit(10)._query;
+
+    expect(query).toBe(
+      "SELECT * FROM fake_table_name WHERE name='fake_name' AND email='fake_email' AND age=1 LIMIT 10",
+    );
+  });
 });
