@@ -53,6 +53,24 @@ export class QueryBuilder {
     return this;
   }
 
+  join(joinProps) {
+    joinProps.map((joinObj) => {
+      this.#setJoinMethod(joinObj.joinOrientation);
+      this.queryString += `${joinObj.table} ON ${this.tableName}.${joinObj.thisTableProperty} ${joinObj.operator} ${joinObj.table}.${joinObj.otherTableProperty}`;
+    });
+    return this;
+  }
+
+  #setJoinMethod(input) {
+    switch (input.toUpperCase()) {
+      case "INNER JOIN":
+        this.queryString += " INNER JOIN ";
+        break;
+      default:
+        throw new Error("Invalid join method.");
+    }
+  }
+
   /**
    * TODO: REFACTOR: Does not work the way I wanted.
    * I hae to say columnOperator || "=" instead of just using the variable
