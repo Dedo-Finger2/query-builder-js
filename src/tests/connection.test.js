@@ -8,6 +8,7 @@ describe("Connection class", () => {
       user: "fake_user",
       password: "fake_password",
       database: "fake_database",
+      port: 123,
     };
 
     const connection = new Connection(connectionProps);
@@ -16,5 +17,6 @@ describe("Connection class", () => {
     expect(connection.user).toBe(connectionProps.user);
     expect(connection.password).toBe(connectionProps.password);
     expect(connection.database).toBe(connectionProps.database);
+    expect(connection.port).toBe(connectionProps.port);
   });
 });
