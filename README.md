@@ -18,7 +18,8 @@ além de garantir confiança ao código, principalmente porque foi feito com Jav
 - [x] Dever ser possível executar a query construída
 - [x] Dever ser possível utilizar qualquer cliente de banco de dados relacional
 - [] Dever ser possível adicionar o operador OR livremente nas queries
-- [] Dever ser possível adicionar o operador AND livremente nas queries 
+- [] Dever ser possível adicionar o operador AND livremente nas queries
+- [] Dever ser possível adicionar o operador NOT livremente nas queries
 
 ## Regras de negócio
 
