@@ -1,0 +1,21 @@
+/* eslint-disable no-undef */
+import { describe, expect, it } from "vitest";
+import { PostgresConnection } from "../core/postgres-connection";
+import "dotenv/config";
+
+describe("PostgreSQLConnection class", () => {
+  it("should not throw when using sut.query", async () => {
+    const connectionProps = {
+      host: process.env.DB_HOST,
+      password: process.env.DB_PASSWORD,
+      user: process.env.DB_USER,
+      database: process.env.DB_DATABASE,
+      port: process.env.DB_PORT,
+    };
+
+    const sut = new PostgresConnection(connectionProps);
+    const users = await sut.query("SELECT * FROM users");
+
+    expect(users).toEqual([]);
+  });
+});
