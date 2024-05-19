@@ -594,4 +594,30 @@ describe("QueryBuilder Class", () => {
       "SELECT * FROM fake_table_name WHERE NOT age > 1 AND NOT name='fake_or_name'",
     );
   });
+
+  it("should return a SELECT query string using in operator on queryBuilder.table.select.where._query", () => {
+    const { queryBuilder } = makeSut();
+    const tableName = "fake_table_name";
+    const whereProps = {
+      name: {
+        operator: "IN",
+        value: ["fake_01", "fake_02", "fake_03"],
+      },
+      email: {
+        value: "fake_email",
+      },
+      age: {
+        value: 1,
+      },
+    };
+
+    const query = queryBuilder
+      .table(tableName)
+      .select()
+      .where(whereProps)._query;
+
+    expect(query).toBe(
+      "SELECT * FROM fake_table_name WHERE name IN ('fake_01','fake_02','fake_03') AND email='fake_email' AND age=1",
+    );
+  });
 });

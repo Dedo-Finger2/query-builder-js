@@ -87,11 +87,20 @@ export class QueryBuilder {
   where(columnValuePairs) {
     const columns = Object.keys(columnValuePairs);
     const whereClause = columns.map((column) => {
-      const columnValue = columnValuePairs[column].value;
+      let columnValue = columnValuePairs[column].value;
+      const isColumnsValueAnArray = Array.isArray(columnValue);
       const isValueANumber = !Number.isNaN(Number(columnValue));
       const columnOperator = columnValuePairs[column].operator
         ? ` ${columnValuePairs[column].operator} `
         : "=";
+      if (isColumnsValueAnArray) {
+        columnValue = `(${columnValue
+          .map((column) => {
+            return `'${column}'`;
+          })
+          .join()})`;
+        return `${column}${columnOperator}${columnValue}`;
+      }
       return `${column}${columnOperator}${isValueANumber ? columnValue : `'${columnValue}'`}`;
     });
     this.queryString += ` WHERE ${whereClause.join(" AND ")}`;
