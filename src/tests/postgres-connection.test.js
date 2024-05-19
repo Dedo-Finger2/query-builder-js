@@ -12,10 +12,11 @@ describe("PostgreSQLConnection class", () => {
       database: process.env.DB_DATABASE,
       port: process.env.DB_PORT,
     };
+    const connection = new PostgresConnection(connectionProps);
+    await connection.query("CREATE TABLE IF NOT EXISTS users");
 
-    const sut = new PostgresConnection(connectionProps);
-    const users = await sut.query("SELECT * FROM users");
+    const sut = await connection.query("SELECT * FROM users");
 
-    expect(users).toEqual([]);
+    expect(sut).toEqual([]);
   });
 });
