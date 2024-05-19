@@ -84,7 +84,6 @@ export class QueryBuilder {
   having(fieldOperationValuePairs) {
     this.queryString += " HAVING ";
     const havingProps = fieldOperationValuePairs.map((havingObj) => {
-      console.log(havingObj);
       const conditionOperator = havingObj.operator
         ? ` ${havingObj.operator} `
         : "=";
