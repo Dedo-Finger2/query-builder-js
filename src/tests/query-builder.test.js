@@ -464,4 +464,47 @@ describe("QueryBuilder Class", () => {
       "SELECT * FROM fake_table_name WHERE name='fake_name' AND email='fake_email' AND age=1 INNER JOIN another_fake_table ON fake_table_name.id = another_fake_table.id",
     );
   });
+
+  it("should return a SELECT query string using multiple JOINs on queryBuilder.table.select.join.join.join._query", () => {
+    const { queryBuilder } = makeSut();
+    const tableName = "fake_table_name";
+    const whereProps = {
+      name: { value: "fake_name" },
+      email: { value: "fake_email" },
+      age: { value: 1 },
+    };
+    const joinProps = [
+      {
+        joinOrientation: "LEFT JOIN",
+        table: "another_fake_table_LEFT",
+        otherTableProperty: "id",
+        operator: "=",
+        thisTableProperty: "id",
+      },
+      {
+        joinOrientation: "RIGHT JOIN",
+        table: "another_fake_table_RIGHT",
+        otherTableProperty: "id",
+        operator: ">",
+        thisTableProperty: "id",
+      },
+      {
+        joinOrientation: "INNER JOIN",
+        table: "another_fake_table_INNER",
+        otherTableProperty: "id",
+        operator: "<=",
+        thisTableProperty: "id",
+      },
+    ];
+
+    const query = queryBuilder
+      .table(tableName)
+      .select()
+      .where(whereProps)
+      .join(joinProps)._query;
+
+    expect(query).toBe(
+      "SELECT * FROM fake_table_name WHERE name='fake_name' AND email='fake_email' AND age=1 LEFT JOIN another_fake_table_LEFT ON fake_table_name.id = another_fake_table_LEFT.id RIGHT JOIN another_fake_table_RIGHT ON fake_table_name.id > another_fake_table_RIGHT.id INNER JOIN another_fake_table_INNER ON fake_table_name.id <= another_fake_table_INNER.id",
+    );
+  });
 });

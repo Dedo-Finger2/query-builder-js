@@ -66,6 +66,15 @@ export class QueryBuilder {
       case "INNER JOIN":
         this.queryString += " INNER JOIN ";
         break;
+      case "LEFT JOIN":
+        this.queryString += " LEFT JOIN ";
+        break;
+      case "RIGHT JOIN":
+        this.queryString += " RIGHT JOIN ";
+        break;
+      case "UNION JOIN":
+        this.queryString += " UNION JOIN ";
+        break;
       default:
         throw new Error("Invalid join method.");
     }
