@@ -367,4 +367,20 @@ describe("QueryBuilder Class", () => {
       "SELECT * FROM fake_table_name WHERE name='fake_name' AND email='fake_email' AND age=1 GROUP BY name,email",
     );
   });
+
+  it("should return a UPDATE query string on queryBuilder.table.update._query", () => {
+    const { queryBuilder } = makeSut();
+    const tableName = "fake_table_name";
+    const updateProps = [
+      { column: "name", newValue: "new_fake_name" },
+      { column: "age", newValue: 12 },
+      { column: "email", newValue: "new_fake_email" },
+    ];
+
+    const query = queryBuilder.table(tableName).update(updateProps)._query;
+
+    expect(query).toBe(
+      "UPDATE fake_table_name SET name = 'new_fake_name', age = 12, email = 'new_fake_email'",
+    );
+  });
 });

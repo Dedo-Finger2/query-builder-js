@@ -35,6 +35,19 @@ export class QueryBuilder {
     return this;
   }
 
+  update(columnValuePairs) {
+    this.queryString += `UPDATE ${this.tableName} SET `;
+    const updateProps = columnValuePairs.map((updateObj) => {
+      const isNewValueANumber = !Number.isNaN(Number(updateObj.newValue));
+      const formattedValue = isNewValueANumber
+        ? updateObj.newValue
+        : `'${updateObj.newValue}'`;
+      return `${updateObj.column} = ${formattedValue}`;
+    });
+    this.queryString += updateProps.join(", ");
+    return this;
+  }
+
   /**
    * TODO: REFACTOR: Does not work the way I wanted.
    * I hae to say columnOperator || "=" instead of just using the variable
