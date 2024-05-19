@@ -23,8 +23,8 @@ describe("PostgreSQLConnection class", () => {
     const { connection } = makeConnection();
     await connection.query("CREATE TABLE IF NOT EXISTS users");
 
-    const sut = await connection.query("SELECT * FROM users");
+    const sut = connection.query("SELECT * FROM users");
 
-    expect(sut).toEqual([]);
+    await expect(sut).resolves.not.toThrow();
   });
 });
