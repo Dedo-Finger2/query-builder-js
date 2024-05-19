@@ -36,7 +36,7 @@ export class QueryBuilder {
   }
 
   update(columnValuePairs) {
-    this.queryString += `UPDATE ${this.tableName} SET `;
+    this.queryString = `UPDATE ${this.tableName} SET `;
     const updateProps = columnValuePairs.map((updateObj) => {
       const isNewValueANumber = !Number.isNaN(Number(updateObj.newValue));
       const formattedValue = isNewValueANumber
@@ -45,6 +45,11 @@ export class QueryBuilder {
       return `${updateObj.column} = ${formattedValue}`;
     });
     this.queryString += updateProps.join(", ");
+    return this;
+  }
+
+  delete() {
+    this.queryString = `DELETE FROM ${this.tableName}`;
     return this;
   }
 
