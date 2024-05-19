@@ -383,4 +383,28 @@ describe("QueryBuilder Class", () => {
       "UPDATE fake_table_name SET name = 'new_fake_name', age = 12, email = 'new_fake_email'",
     );
   });
+
+  it("should return a UPDATE query string with where clause on queryBuilder.table.update._query", () => {
+    const { queryBuilder } = makeSut();
+    const tableName = "fake_table_name";
+    const updateProps = [
+      { column: "name", newValue: "new_fake_name" },
+      { column: "age", newValue: 12 },
+      { column: "email", newValue: "new_fake_email" },
+    ];
+    const whereProps = {
+      name: { value: "fake_name" },
+      email: { value: "fake_email" },
+      age: { value: 1 },
+    };
+
+    const query = queryBuilder
+      .table(tableName)
+      .update(updateProps)
+      .where(whereProps)._query;
+
+    expect(query).toBe(
+      "UPDATE fake_table_name SET name = 'new_fake_name', age = 12, email = 'new_fake_email' WHERE name='fake_name' AND email='fake_email' AND age=1",
+    );
+  });
 });
