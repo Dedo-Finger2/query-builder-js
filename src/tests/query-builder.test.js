@@ -407,4 +407,32 @@ describe("QueryBuilder Class", () => {
       "UPDATE fake_table_name SET name = 'new_fake_name', age = 12, email = 'new_fake_email' WHERE name='fake_name' AND email='fake_email' AND age=1",
     );
   });
+
+  it("should return a DELETE query string on queryBuilder.table.delete._query", () => {
+    const { queryBuilder } = makeSut();
+    const tableName = "fake_table_name";
+
+    const query = queryBuilder.table(tableName).delete()._query;
+
+    expect(query).toBe("DELETE FROM fake_table_name");
+  });
+
+  it("should return a DELETE query string using where clauses on queryBuilder.table.delete._query", () => {
+    const { queryBuilder } = makeSut();
+    const tableName = "fake_table_name";
+    const whereProps = {
+      name: { value: "fake_name" },
+      email: { value: "fake_email" },
+      age: { value: 1 },
+    };
+
+    const query = queryBuilder
+      .table(tableName)
+      .delete()
+      .where(whereProps)._query;
+
+    expect(query).toBe(
+      "DELETE FROM fake_table_name WHERE name='fake_name' AND email='fake_email' AND age=1",
+    );
+  });
 });
