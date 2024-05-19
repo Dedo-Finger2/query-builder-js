@@ -507,4 +507,36 @@ describe("QueryBuilder Class", () => {
       "SELECT * FROM fake_table_name WHERE name='fake_name' AND email='fake_email' AND age=1 LEFT JOIN another_fake_table_LEFT ON fake_table_name.id = another_fake_table_LEFT.id RIGHT JOIN another_fake_table_RIGHT ON fake_table_name.id > another_fake_table_RIGHT.id INNER JOIN another_fake_table_INNER ON fake_table_name.id <= another_fake_table_INNER.id",
     );
   });
+
+  it("should return a SELECT query string using offset clause on queryBuilder.table.select.orWhere._query", () => {
+    const { queryBuilder } = makeSut();
+    const tableName = "fake_table_name";
+    const whereProps = {
+      name: {
+        value: "fake_name",
+      },
+      email: {
+        value: "fake_email",
+      },
+    };
+    const orWhereProps = {
+      age: {
+        operator: ">",
+        value: 1,
+      },
+      name: {
+        value: "fake_or_name",
+      },
+    };
+
+    const query = queryBuilder
+      .table(tableName)
+      .select()
+      .where(whereProps)
+      .orWhere(orWhereProps)._query;
+
+    expect(query).toBe(
+      "SELECT * FROM fake_table_name WHERE name='fake_name' AND email='fake_email' OR age > 1 OR name='fake_or_name'",
+    );
+  });
 });

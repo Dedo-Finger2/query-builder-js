@@ -98,6 +98,20 @@ export class QueryBuilder {
     return this;
   }
 
+  orWhere(columnValuePairs) {
+    const columns = Object.keys(columnValuePairs);
+    const whereClause = columns.map((column) => {
+      const columnValue = columnValuePairs[column].value;
+      const isValueANumber = !Number.isNaN(Number(columnValue));
+      const columnOperator = columnValuePairs[column].operator
+        ? ` ${columnValuePairs[column].operator} `
+        : "=";
+      return `${column}${columnOperator}${isValueANumber ? columnValue : `'${columnValue}'`}`;
+    });
+    this.queryString += ` OR ${whereClause.join(" OR ")}`;
+    return this;
+  }
+
   orderBy(columnOrientationPairs) {
     this.queryString += " ORDER BY ";
     const defaultOrientation = "ASC";
