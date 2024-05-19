@@ -112,6 +112,27 @@ export class QueryBuilder {
     return this;
   }
 
+  notWhere(columnValuePairs) {
+    const columns = Object.keys(columnValuePairs);
+    const whereClause = columns.map((column) => {
+      const columnValue = columnValuePairs[column].value;
+      const isValueANumber = !Number.isNaN(Number(columnValue));
+      const columnOperator = columnValuePairs[column].operator
+        ? ` ${columnValuePairs[column].operator} `
+        : "=";
+      return `${column}${columnOperator}${isValueANumber ? columnValue : `'${columnValue}'`}`;
+    });
+    const queryStringDoesNotHaveWhereClause =
+      !this.queryString.includes("WHERE");
+    if (queryStringDoesNotHaveWhereClause) {
+      this.queryString += " WHERE NOT ";
+      this.queryString += `${whereClause.join(" AND NOT ")}`;
+      return this;
+    }
+    this.queryString += ` NOT ${whereClause.join(" AND NOT ")}`;
+    return this;
+  }
+
   orderBy(columnOrientationPairs) {
     this.queryString += " ORDER BY ";
     const defaultOrientation = "ASC";

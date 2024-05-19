@@ -508,7 +508,7 @@ describe("QueryBuilder Class", () => {
     );
   });
 
-  it("should return a SELECT query string using offset clause on queryBuilder.table.select.orWhere._query", () => {
+  it("should return a SELECT query string using or operator on queryBuilder.table.select.orWhere._query", () => {
     const { queryBuilder } = makeSut();
     const tableName = "fake_table_name";
     const whereProps = {
@@ -537,6 +537,61 @@ describe("QueryBuilder Class", () => {
 
     expect(query).toBe(
       "SELECT * FROM fake_table_name WHERE name='fake_name' AND email='fake_email' OR age > 1 OR name='fake_or_name'",
+    );
+  });
+
+  it("should return a SELECT query string using where and add or operator in it on queryBuilder.table.select.where.notWhere._query", () => {
+    const { queryBuilder } = makeSut();
+    const tableName = "fake_table_name";
+    const whereProps = {
+      name: {
+        value: "fake_name",
+      },
+      email: {
+        value: "fake_email",
+      },
+    };
+    const notWhereProps = {
+      age: {
+        operator: ">",
+        value: 1,
+      },
+      name: {
+        value: "fake_or_name",
+      },
+    };
+
+    const query = queryBuilder
+      .table(tableName)
+      .select()
+      .where(whereProps)
+      .notWhere(notWhereProps)._query;
+
+    expect(query).toBe(
+      "SELECT * FROM fake_table_name WHERE name='fake_name' AND email='fake_email' NOT age > 1 AND NOT name='fake_or_name'",
+    );
+  });
+
+  it("should return a SELECT query string using only where not on queryBuilder.table.select.notWhere._query", () => {
+    const { queryBuilder } = makeSut();
+    const tableName = "fake_table_name";
+    const notWhereProps = {
+      age: {
+        operator: ">",
+        value: 1,
+      },
+      name: {
+        value: "fake_or_name",
+      },
+    };
+
+    const query = queryBuilder
+      .table(tableName)
+      .select()
+      .notWhere(notWhereProps)._query;
+
+    expect(query).toBe(
+      "SELECT * FROM fake_table_name WHERE NOT age > 1 AND NOT name='fake_or_name'",
     );
   });
 });
