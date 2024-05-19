@@ -620,4 +620,30 @@ describe("QueryBuilder Class", () => {
       "SELECT * FROM fake_table_name WHERE name IN ('fake_01','fake_02','fake_03') AND email='fake_email' AND age=1",
     );
   });
+
+  it("should return a SELECT query string using between operator on queryBuilder.table.select.where._query", () => {
+    const { queryBuilder } = makeSut();
+    const tableName = "fake_table_name";
+    const whereProps = {
+      name: {
+        operator: "BETWEEN",
+        value: ["fake_01", "fake_02"],
+      },
+      email: {
+        value: "fake_email",
+      },
+      age: {
+        value: 1,
+      },
+    };
+
+    const query = queryBuilder
+      .table(tableName)
+      .select()
+      .where(whereProps)._query;
+
+    expect(query).toBe(
+      "SELECT * FROM fake_table_name WHERE name BETWEEN 'fake_01' AND 'fake_02' AND email='fake_email' AND age=1",
+    );
+  });
 });

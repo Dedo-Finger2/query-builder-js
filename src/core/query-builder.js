@@ -93,12 +93,23 @@ export class QueryBuilder {
       const columnOperator = columnValuePairs[column].operator
         ? ` ${columnValuePairs[column].operator} `
         : "=";
-      if (isColumnsValueAnArray) {
+      if (isColumnsValueAnArray && columnValuePairs[column].operator === "IN") {
         columnValue = `(${columnValue
           .map((column) => {
             return `'${column}'`;
           })
           .join()})`;
+        return `${column}${columnOperator}${columnValue}`;
+      }
+      if (
+        isColumnsValueAnArray &&
+        columnValuePairs[column].operator === "BETWEEN"
+      ) {
+        columnValue = `${columnValue
+          .map((column) => {
+            return `'${column}'`;
+          })
+          .join(" AND ")}`;
         return `${column}${columnOperator}${columnValue}`;
       }
       return `${column}${columnOperator}${isValueANumber ? columnValue : `'${columnValue}'`}`;
