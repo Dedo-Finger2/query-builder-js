@@ -37,6 +37,8 @@ export class PostgresConnection extends Connection {
       try {
         const response = await client.query(query);
         return response.rows;
+      } catch (error) {
+        console.error(error);
       } finally {
         client.release();
       }
