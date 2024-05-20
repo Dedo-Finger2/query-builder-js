@@ -1,5 +1,5 @@
 /* eslint-disable no-undef */
-import { describe, expect, it, beforeAll, afterAll } from "vitest";
+import { describe, expect, it } from "vitest";
 import { Connection } from "../core/connection.js";
 import { QueryBuilder } from "../core/query-builder.js";
 import { PostgresConnection } from "../core/postgres-connection.js";
@@ -39,29 +39,17 @@ const makeConnection = () => {
   };
 };
 
-beforeAll(async () => {
-  const { connection } = makeConnection();
-  const createDatabase = "CREATE DATABASE IF NOT EXISTS queryBuilderJs;";
-  const createUsersTable =
-    "CREATE TABLE IF NOT EXISTS users (id SERIAL PRIMARY KEY, name VARCHAR(100), email VARCHAR(100), age INT);";
-  const createOrdersTable =
-    "CREATE TABLE IF NOT EXISTS orders (id SERIAL PRIMARY KEY, user_id INT REFERENCES users(id), product_name VARCHAR(100), quantity INT);";
-  const insertUsersData =
-    "INSERT INTO users (name, email, age) VALUES ('John Doe', 'john@example.com', 30), ('Jane Smith', 'jane@example.com', 25), ('Alice Johnson', 'alice@example.com', 35);";
-  const insertOrdersData =
-    "INSERT INTO orders (user_id, product_name, quantity) VALUES (1, 'Product 1', 2), (2, 'Product 2', 1), (3, 'Product 3', 3);";
-  await connection.query(createDatabase);
-  await connection.query(createUsersTable);
-  await connection.query(createOrdersTable);
-  await connection.query(insertUsersData);
-  await connection.query(insertOrdersData);
-});
-
-afterAll(async () => {
-  const { connection } = makeConnection();
-  const dropDatabase = "DROP DATABASE IF EXISTS queryBuilderJs";
-  await connection.query(dropDatabase);
-});
+// beforeAll(async () => {
+//   const { connection } = makeConnection();
+//   const createUsersTable = "CREATE TABLE IF NOT EXISTS users (id SERIAL PRIMARY KEY, name VARCHAR(100), email VARCHAR(100), age INT);";
+//   const createOrdersTable = "CREATE TABLE IF NOT EXISTS orders (id SERIAL PRIMARY KEY, user_id INT REFERENCES users(id), product_name VARCHAR(100), quantity INT);";
+//   const insertUsersData = "INSERT INTO users (name, email, age) VALUES ('John Doe', 'john@example.com', 30), ('Jane Smith', 'jane@example.com', 25), ('Alice Johnson', 'alice@example.com', 35);";
+//   const insertOrdersData = "INSERT INTO orders (user_id, product_name, quantity) VALUES (1, 'Product 1', 2), (2, 'Product 2', 1), (3, 'Product 3', 3);";
+//   await connection.query(createUsersTable);
+//   await connection.query(createOrdersTable);
+//   await connection.query(insertUsersData);
+//   await connection.query(insertOrdersData);
+// });
 
 describe("QueryBuilder Class", () => {
   it("should create a new query builder", () => {
@@ -688,12 +676,326 @@ describe("QueryBuilder Class", () => {
       "SELECT * FROM fake_table_name WHERE name BETWEEN 'fake_01' AND 'fake_02' AND email='fake_email' AND age=1",
     );
   });
+});
 
+describe("QueryBuilder PostgreSQL integration", () => {
   it("should return a list of users", async () => {
     const { connection } = makeConnection();
     const { queryBuilder } = makeSut();
     const tableName = "users";
     const query = queryBuilder.table(tableName).select()._query;
+
+    const users = await connection.query(query);
+
+    expect(users.length).toBeGreaterThan(0);
+  });
+
+  it("should return a list of users with age above 30", async () => {
+    const { connection } = makeConnection();
+    const { queryBuilder } = makeSut();
+    const tableName = "users";
+    const whereProps = {
+      age: {
+        operator: ">",
+        value: 30,
+      },
+    };
+    const query = queryBuilder
+      .table(tableName)
+      .select()
+      .where(whereProps)._query;
+
+    const users = await connection.query(query);
+
+    expect(users.length).toBeGreaterThan(0);
+  });
+
+  it("should return a list of users with name like Joh", async () => {
+    const { connection } = makeConnection();
+    const { queryBuilder } = makeSut();
+    const tableName = "users";
+    const whereProps = {
+      name: {
+        operator: "LIKE",
+        value: "%Joh%",
+      },
+    };
+    const query = queryBuilder
+      .table(tableName)
+      .select()
+      .where(whereProps)._query;
+
+    const users = await connection.query(query);
+
+    expect(users.length).toBeGreaterThan(0);
+  });
+
+  it("should return a list of orders of the users named John Doe", async () => {
+    const { connection } = makeConnection();
+    const { queryBuilder } = makeSut();
+    const tableName = "users";
+    const whereProps = {
+      name: {
+        operator: "LIKE",
+        value: "%Joh%",
+      },
+    };
+    const joinProps = [
+      {
+        joinOrientation: "INNER JOIN",
+        table: "orders",
+        otherTableProperty: "user_id",
+        operator: "=",
+        thisTableProperty: "id",
+      },
+    ];
+    const query = queryBuilder
+      .table(tableName)
+      .select()
+      .join(joinProps)
+      .where(whereProps)._query;
+
+    const users = await connection.query(query);
+
+    expect(users.length).toBeGreaterThan(0);
+  });
+
+  it("should return a list of orders limited by 1 of the users named John Doe", async () => {
+    const { connection } = makeConnection();
+    const { queryBuilder } = makeSut();
+    const tableName = "users";
+    const whereProps = {
+      name: {
+        operator: "LIKE",
+        value: "%Joh%",
+      },
+    };
+    const joinProps = [
+      {
+        joinOrientation: "INNER JOIN",
+        table: "orders",
+        otherTableProperty: "user_id",
+        operator: "=",
+        thisTableProperty: "id",
+      },
+    ];
+    const query = queryBuilder
+      .table(tableName)
+      .select()
+      .join(joinProps)
+      .where(whereProps)
+      .limit(1)._query;
+
+    const users = await connection.query(query);
+
+    expect(users.length).toBe(1);
+  });
+
+  it("should return a list of users grouped by age", async () => {
+    const { connection } = makeConnection();
+    const { queryBuilder } = makeSut();
+    const tableName = "users";
+    const whereProps = {
+      name: {
+        operator: "LIKE",
+        value: "%Joh%",
+      },
+    };
+    const joinProps = [
+      {
+        joinOrientation: "INNER JOIN",
+        table: "orders",
+        otherTableProperty: "user_id",
+        operator: "=",
+        thisTableProperty: "id",
+      },
+    ];
+    const query = queryBuilder
+      .table(tableName)
+      .select(["users.age", "COUNT(orders.id) AS order_count"])
+      .join(joinProps)
+      .where(whereProps)
+      .groupBy(["users.age"])._query;
+
+    const users = await connection.query(query);
+
+    expect(users.length).toBeGreaterThan(0);
+  });
+
+  it("should return a list of users from youngest to oldest", async () => {
+    const { connection } = makeConnection();
+    const { queryBuilder } = makeSut();
+    const tableName = "users";
+    const orderByProps = [{ column: "age", orientation: "ASC" }];
+    const query = queryBuilder
+      .table(tableName)
+      .select(["name", "age"])
+      .orderBy(orderByProps)._query;
+
+    const users = await connection.query(query);
+
+    expect(users.length).toBeGreaterThan(0);
+    expect(users[0].age).toBe(12);
+  });
+
+  it("should return a list of users grouped by age", async () => {
+    const { connection } = makeConnection();
+    const { queryBuilder } = makeSut();
+    const tableName = "users";
+    const joinProps = [
+      {
+        joinOrientation: "INNER JOIN",
+        table: "orders",
+        otherTableProperty: "user_id",
+        operator: "=",
+        thisTableProperty: "id",
+      },
+    ];
+    const query = queryBuilder
+      .table(tableName)
+      .select(["users.name", "SUM(orders.quantity) AS order_quantity"])
+      .join(joinProps)
+      .groupBy(["users.name"])._query;
+
+    const users = await connection.query(query);
+
+    expect(users.length).toBeGreaterThan(0);
+  });
+
+  it("should insert a new user", async () => {
+    const { connection } = makeConnection();
+    const { queryBuilder } = makeSut();
+    const tableName = "users";
+    const insertProps = {
+      name: "fake_name",
+      email: "fake_email",
+      age: 12,
+    };
+    const query = queryBuilder.table(tableName).insert(insertProps)._query;
+
+    const promiseResponse = connection.query(query);
+
+    await expect(promiseResponse).resolves.not.toThrow();
+  });
+
+  it("should update user's age where user id = 1", async () => {
+    const { connection } = makeConnection();
+    const { queryBuilder } = makeSut();
+    const tableName = "users";
+    const updateProps = [{ column: "age", newValue: 12 }];
+    const whereProps = {
+      id: {
+        value: 1,
+      },
+    };
+    const query = queryBuilder
+      .table(tableName)
+      .update(updateProps)
+      .where(whereProps)._query;
+
+    await connection.query(query);
+    const user = await connection.query("SELECT * FROM users WHERE id = 1;");
+
+    expect(user[0].age).toBe(12);
+  });
+
+  it("should delete the order with id 2", async () => {
+    const { connection } = makeConnection();
+    const { queryBuilder } = makeSut();
+    const tableName = "orders";
+    const whereProps = {
+      id: {
+        value: 1,
+      },
+    };
+    const query = queryBuilder
+      .table(tableName)
+      .delete()
+      .where(whereProps)._query;
+
+    await connection.query(query);
+    const user = await connection.query("SELECT * FROM orders WHERE id = 1;");
+
+    expect(user[0]).toBeUndefined();
+  });
+
+  it("should return a list of users with age between 20 and 25", async () => {
+    const { connection } = makeConnection();
+    const { queryBuilder } = makeSut();
+    const tableName = "users";
+    const whereProps = {
+      age: {
+        operator: "BETWEEN",
+        value: [20, 25],
+      },
+    };
+    const query = queryBuilder
+      .table(tableName)
+      .select()
+      .where(whereProps)._query;
+    console.log(query);
+    const users = await connection.query(query);
+
+    expect(users.length).toBeGreaterThan(0);
+  });
+
+  it("should return a list of users with age in a list of ages", async () => {
+    const { connection } = makeConnection();
+    const { queryBuilder } = makeSut();
+    const tableName = "users";
+    const whereProps = {
+      age: {
+        operator: "IN",
+        value: [12, 25, 35],
+      },
+    };
+    const query = queryBuilder
+      .table(tableName)
+      .select()
+      .where(whereProps)._query;
+
+    const users = await connection.query(query);
+
+    expect(users.length).toBeGreaterThan(0);
+  });
+
+  it("should return a list of users paginated using offset and limit clausules", async () => {
+    const { connection } = makeConnection();
+    const { queryBuilder } = makeSut();
+    const tableName = "users";
+    const query = queryBuilder
+      .table(tableName)
+      .select()
+      .limit(2)
+      .offset(0)._query;
+
+    const users = await connection.query(query);
+    const next2Users = await connection.query(
+      "SELECT * FROM users LIMIT 2 OFFSET 2",
+    );
+
+    expect(users.length).toBe(2);
+    expect(users[0].id).toBe(2);
+    expect(users[1].id).toBe(3);
+    expect(next2Users.length).toBe(2);
+    expect(next2Users[0].id).toBe(4);
+    expect(next2Users[1].id).toBe(5);
+  });
+
+  it("should return a list of users where not age === 25", async () => {
+    const { connection } = makeConnection();
+    const { queryBuilder } = makeSut();
+    const tableName = "users";
+    const notWhereProps = {
+      age: {
+        operator: "=",
+        value: 25,
+      },
+    };
+    const query = queryBuilder
+      .table(tableName)
+      .select()
+      .notWhere(notWhereProps)._query;
 
     const users = await connection.query(query);
 
