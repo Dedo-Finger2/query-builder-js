@@ -1,4 +1,4 @@
-import { Connection } from "./connection.js";
+import { Connection } from "../core/connection.js";
 import postgresDriver from "pg";
 
 const { Pool } = postgresDriver;
