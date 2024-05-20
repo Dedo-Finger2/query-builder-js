@@ -21,9 +21,11 @@ const makeConnection = () => {
 describe("PostgreSQLConnection class", () => {
   it("should not throw when using sut.query", async () => {
     const { connection } = makeConnection();
-    await connection.query("CREATE TABLE IF NOT EXISTS users");
+    await connection.query(
+      "CREATE TABLE IF NOT EXISTS users (id SERIAL PRIMARY KEY, name VARCHAR(100));",
+    );
 
-    const sut = connection.query("SELECT * FROM users");
+    const sut = connection.query("SELECT * FROM users;");
 
     await expect(sut).resolves.not.toThrow();
   });
