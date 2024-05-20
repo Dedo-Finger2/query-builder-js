@@ -1,6 +1,9 @@
-import { describe, expect, it } from "vitest";
-import { Connection } from "../core/connection";
-import { QueryBuilder } from "../core/query-builder";
+/* eslint-disable no-undef */
+import { describe, expect, it, beforeAll, afterAll } from "vitest";
+import { Connection } from "../core/connection.js";
+import { QueryBuilder } from "../core/query-builder.js";
+import { PostgresConnection } from "../core/postgres-connection.js";
+import "dotenv/config";
 
 const makeSut = () => {
   const connectionProps = {
@@ -20,6 +23,45 @@ const makeSut = () => {
     queryBuilder,
   };
 };
+
+const makeConnection = () => {
+  const connectionProps = {
+    host: process.env.DB_HOST,
+    password: process.env.DB_PASSWORD,
+    user: process.env.DB_USER,
+    database: process.env.DB_DATABASE,
+    port: process.env.DB_PORT,
+  };
+  const connection = new PostgresConnection(connectionProps);
+  return {
+    connection,
+    connectionProps,
+  };
+};
+
+beforeAll(async () => {
+  const { connection } = makeConnection();
+  const createDatabase = "CREATE DATABASE IF NOT EXISTS queryBuilderJs;";
+  const createUsersTable =
+    "CREATE TABLE IF NOT EXISTS users (id SERIAL PRIMARY KEY, name VARCHAR(100), email VARCHAR(100), age INT);";
+  const createOrdersTable =
+    "CREATE TABLE IF NOT EXISTS orders (id SERIAL PRIMARY KEY, user_id INT REFERENCES users(id), product_name VARCHAR(100), quantity INT);";
+  const insertUsersData =
+    "INSERT INTO users (name, email, age) VALUES ('John Doe', 'john@example.com', 30), ('Jane Smith', 'jane@example.com', 25), ('Alice Johnson', 'alice@example.com', 35);";
+  const insertOrdersData =
+    "INSERT INTO orders (user_id, product_name, quantity) VALUES (1, 'Product 1', 2), (2, 'Product 2', 1), (3, 'Product 3', 3);";
+  await connection.query(createDatabase);
+  await connection.query(createUsersTable);
+  await connection.query(createOrdersTable);
+  await connection.query(insertUsersData);
+  await connection.query(insertOrdersData);
+});
+
+afterAll(async () => {
+  const { connection } = makeConnection();
+  const dropDatabase = "DROP DATABASE IF EXISTS queryBuilderJs";
+  await connection.query(dropDatabase);
+});
 
 describe("QueryBuilder Class", () => {
   it("should create a new query builder", () => {
@@ -645,5 +687,16 @@ describe("QueryBuilder Class", () => {
     expect(query).toBe(
       "SELECT * FROM fake_table_name WHERE name BETWEEN 'fake_01' AND 'fake_02' AND email='fake_email' AND age=1",
     );
+  });
+
+  it("should return a list of users", async () => {
+    const { connection } = makeConnection();
+    const { queryBuilder } = makeSut();
+    const tableName = "users";
+    const query = queryBuilder.table(tableName).select()._query;
+
+    const users = await connection.query(query);
+
+    expect(users.length).toBeGreaterThan(0);
   });
 });
