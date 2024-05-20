@@ -81,39 +81,43 @@ export class QueryBuilder {
   }
 
   /**
-   * TODO: REFACTOR: Does not work the way I wanted.
-   * I hae to say columnOperator || "=" instead of just using the variable
+   *
+   * @param {Array} columnOperatorValuePairsArray
+   * @returns
    */
-  where(columnValuePairs) {
-    const columns = Object.keys(columnValuePairs);
-    const whereClause = columns.map((column) => {
-      let columnValue = columnValuePairs[column].value;
-      const isColumnsValueAnArray = Array.isArray(columnValue);
-      const isValueANumber = !Number.isNaN(Number(columnValue));
-      const columnOperator = columnValuePairs[column].operator
-        ? ` ${columnValuePairs[column].operator} `
-        : "=";
-      if (isColumnsValueAnArray && columnValuePairs[column].operator === "IN") {
-        columnValue = `(${columnValue
-          .map((column) => {
-            return !Number.isNaN(Number(column)) ? `${column}` : `'${column}'`;
-          })
-          .join()})`;
-        return `${column}${columnOperator}${columnValue}`;
-      }
-      if (
-        isColumnsValueAnArray &&
-        columnValuePairs[column].operator === "BETWEEN"
-      ) {
-        columnValue = `${columnValue
-          .map((column) => {
-            return !Number.isNaN(Number(column)) ? `${column}` : `'${column}'`;
-          })
-          .join(" AND ")}`;
-        return `${column}${columnOperator}${columnValue}`;
-      }
-      return `${column}${columnOperator}${isValueANumber ? columnValue : `'${columnValue}'`}`;
-    });
+  where(columnOperatorValuePairsArray) {
+    const whereClause = columnOperatorValuePairsArray.map(
+      (columnOperatorValueObj) => {
+        const column = columnOperatorValueObj.column;
+        const operator = columnOperatorValueObj.operator
+          ? ` ${columnOperatorValueObj.operator} `
+          : " = ";
+        let value = columnOperatorValueObj.value;
+        const isColumnsValueAnArray = Array.isArray(value);
+        const isValueANumber = !Number.isNaN(Number(value));
+        if (isColumnsValueAnArray && operator.trim() === "IN") {
+          value = `(${value
+            .map((column) => {
+              return !Number.isNaN(Number(column))
+                ? `${column}`
+                : `'${column}'`;
+            })
+            .join()})`;
+          return `${column}${operator}${value}`;
+        }
+        if (isColumnsValueAnArray && operator.trim() === "BETWEEN") {
+          value = `${value
+            .map((column) => {
+              return !Number.isNaN(Number(column))
+                ? `${column}`
+                : `'${column}'`;
+            })
+            .join(" AND ")}`;
+          return `${column}${operator}${value}`;
+        }
+        return `${column}${operator}${isValueANumber ? value : `'${value}'`}`;
+      },
+    );
     this.queryString += ` WHERE ${whereClause.join(" AND ")}`;
     return this;
   }

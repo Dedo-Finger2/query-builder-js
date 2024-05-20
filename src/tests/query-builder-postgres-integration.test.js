@@ -40,12 +40,13 @@ describe("QueryBuilder PostgreSQL integration", () => {
   it("should return a list of users with age above 30", async () => {
     const { queryBuilder, connection } = makeSut();
     const tableName = "users";
-    const whereProps = {
-      age: {
+    const whereProps = [
+      {
+        column: "age",
         operator: ">",
         value: 30,
       },
-    };
+    ];
     const query = queryBuilder
       .table(tableName)
       .select()
@@ -59,17 +60,18 @@ describe("QueryBuilder PostgreSQL integration", () => {
   it("should return a list of users with name like Joh", async () => {
     const { queryBuilder, connection } = makeSut();
     const tableName = "users";
-    const whereProps = {
-      name: {
+    const whereProps = [
+      {
+        column: "name",
         operator: "LIKE",
         value: "%Joh%",
       },
-    };
+    ];
     const query = queryBuilder
       .table(tableName)
       .select()
       .where(whereProps)._query;
-
+    console.log(query);
     const users = await connection.query(query);
 
     expect(users.length).toBeGreaterThan(0);
@@ -78,12 +80,13 @@ describe("QueryBuilder PostgreSQL integration", () => {
   it("should return a list of orders of the users named John Doe", async () => {
     const { queryBuilder, connection } = makeSut();
     const tableName = "users";
-    const whereProps = {
-      name: {
+    const whereProps = [
+      {
+        column: "name",
         operator: "LIKE",
         value: "%Joh%",
       },
-    };
+    ];
     const joinProps = [
       {
         joinOrientation: "INNER JOIN",
@@ -107,12 +110,13 @@ describe("QueryBuilder PostgreSQL integration", () => {
   it("should return a list of orders limited by 1 of the users named John Doe", async () => {
     const { queryBuilder, connection } = makeSut();
     const tableName = "users";
-    const whereProps = {
-      name: {
+    const whereProps = [
+      {
+        column: "name",
         operator: "LIKE",
         value: "%Joh%",
       },
-    };
+    ];
     const joinProps = [
       {
         joinOrientation: "INNER JOIN",
@@ -137,12 +141,13 @@ describe("QueryBuilder PostgreSQL integration", () => {
   it("should return a list of users grouped by age", async () => {
     const { queryBuilder, connection } = makeSut();
     const tableName = "users";
-    const whereProps = {
-      name: {
+    const whereProps = [
+      {
+        column: "name",
         operator: "LIKE",
         value: "%Joh%",
       },
-    };
+    ];
     const joinProps = [
       {
         joinOrientation: "INNER JOIN",
@@ -221,11 +226,12 @@ describe("QueryBuilder PostgreSQL integration", () => {
     const { queryBuilder, connection } = makeSut();
     const tableName = "users";
     const updateProps = [{ column: "age", newValue: 12 }];
-    const whereProps = {
-      id: {
+    const whereProps = [
+      {
+        column: "id",
         value: 1,
       },
-    };
+    ];
     const query = queryBuilder
       .table(tableName)
       .update(updateProps)
@@ -240,11 +246,12 @@ describe("QueryBuilder PostgreSQL integration", () => {
   it("should delete the order with id 2", async () => {
     const { queryBuilder, connection } = makeSut();
     const tableName = "orders";
-    const whereProps = {
-      id: {
+    const whereProps = [
+      {
+        column: "id",
         value: 1,
       },
-    };
+    ];
     const query = queryBuilder
       .table(tableName)
       .delete()
@@ -259,12 +266,13 @@ describe("QueryBuilder PostgreSQL integration", () => {
   it("should return a list of users with age between 20 and 25", async () => {
     const { queryBuilder, connection } = makeSut();
     const tableName = "users";
-    const whereProps = {
-      age: {
+    const whereProps = [
+      {
+        column: "age",
         operator: "BETWEEN",
         value: [20, 25],
       },
-    };
+    ];
     const query = queryBuilder
       .table(tableName)
       .select()
@@ -278,12 +286,13 @@ describe("QueryBuilder PostgreSQL integration", () => {
   it("should return a list of users with age in a list of ages", async () => {
     const { queryBuilder, connection } = makeSut();
     const tableName = "users";
-    const whereProps = {
-      age: {
+    const whereProps = [
+      {
+        column: "age",
         operator: "IN",
         value: [12, 25, 35],
       },
-    };
+    ];
     const query = queryBuilder
       .table(tableName)
       .select()

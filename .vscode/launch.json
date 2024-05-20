@@ -1,0 +1,16 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Debug Vitest Tests",
+      "type": "node",
+      "request": "launch",
+      "runtimeExecutable": "/home/ant/.nvm/versions/node/v20.13.1/bin/node",
+      "program": "${workspaceFolder}/node_modules/vitest/vitest.mjs",
+      "args": ["run"],
+      "console": "integratedTerminal",
+      "internalConsoleOptions": "neverOpen",
+      "port": 9229
+    }
+  ]
+}
