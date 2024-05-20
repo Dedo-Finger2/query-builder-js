@@ -96,7 +96,7 @@ export class QueryBuilder {
       if (isColumnsValueAnArray && columnValuePairs[column].operator === "IN") {
         columnValue = `(${columnValue
           .map((column) => {
-            return `'${column}'`;
+            return !Number.isNaN(Number(column)) ? `${column}` : `'${column}'`;
           })
           .join()})`;
         return `${column}${columnOperator}${columnValue}`;
@@ -107,7 +107,7 @@ export class QueryBuilder {
       ) {
         columnValue = `${columnValue
           .map((column) => {
-            return `'${column}'`;
+            return !Number.isNaN(Number(column)) ? `${column}` : `'${column}'`;
           })
           .join(" AND ")}`;
         return `${column}${columnOperator}${columnValue}`;
