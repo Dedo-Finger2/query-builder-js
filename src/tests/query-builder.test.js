@@ -78,34 +78,12 @@ describe("QueryBuilder Class", () => {
   it("should return a SELECT query string with where clause when calling queryBuilder.table.select._query", () => {
     const { queryBuilder } = makeSut();
     const tableName = "fake_table_name";
-    const whereProps = {
-      name: {
+    const whereProps = [
+      {
+        column: "name",
         value: "fake_name",
       },
-    };
-
-    const query = queryBuilder
-      .table(tableName)
-      .select()
-      .where(whereProps)._query;
-
-    expect(query).toBe("SELECT * FROM fake_table_name WHERE name='fake_name'");
-  });
-
-  it("should return a SELECT query string with multiple where clause when calling queryBuilder.table.select._query", () => {
-    const { queryBuilder } = makeSut();
-    const tableName = "fake_table_name";
-    const whereProps = {
-      name: {
-        value: "fake_name",
-      },
-      email: {
-        value: "fake_email",
-      },
-      age: {
-        value: 1,
-      },
-    };
+    ];
 
     const query = queryBuilder
       .table(tableName)
@@ -113,25 +91,56 @@ describe("QueryBuilder Class", () => {
       .where(whereProps)._query;
 
     expect(query).toBe(
-      "SELECT * FROM fake_table_name WHERE name='fake_name' AND email='fake_email' AND age=1",
+      "SELECT * FROM fake_table_name WHERE name = 'fake_name'",
+    );
+  });
+
+  it("should return a SELECT query string with multiple where clause when calling queryBuilder.table.select._query", () => {
+    const { queryBuilder } = makeSut();
+    const tableName = "fake_table_name";
+    const whereProps = [
+      {
+        column: "name",
+        value: "fake_name",
+      },
+      {
+        column: "email",
+        value: "fake_email",
+      },
+      {
+        column: "age",
+        value: 1,
+      },
+    ];
+
+    const query = queryBuilder
+      .table(tableName)
+      .select()
+      .where(whereProps)._query;
+
+    expect(query).toBe(
+      "SELECT * FROM fake_table_name WHERE name = 'fake_name' AND email = 'fake_email' AND age = 1",
     );
   });
 
   it("should return a SELECT query string with where clause using LIKE when calling queryBuilder.table.select._query", () => {
     const { queryBuilder } = makeSut();
     const tableName = "fake_table_name";
-    const whereProps = {
-      name: {
-        value: "%fake_name%",
+    const whereProps = [
+      {
+        column: "name",
         operator: "LIKE",
+        value: "%fake_name%",
       },
-      email: {
+      {
+        column: "email",
         value: "fake_email",
       },
-      age: {
+      {
+        column: "age",
         value: 1,
       },
-    };
+    ];
 
     const query = queryBuilder
       .table(tableName)
@@ -139,29 +148,33 @@ describe("QueryBuilder Class", () => {
       .where(whereProps)._query;
 
     expect(query).toBe(
-      "SELECT * FROM fake_table_name WHERE name LIKE '%fake_name%' AND email='fake_email' AND age=1",
+      "SELECT * FROM fake_table_name WHERE name LIKE '%fake_name%' AND email = 'fake_email' AND age = 1",
     );
   });
 
   it("should return a SELECT query string with where clause using any operator when calling queryBuilder.table.select._query", () => {
     const { queryBuilder } = makeSut();
     const tableName = "fake_table_name";
-    const whereProps = {
-      name: {
+    const whereProps = [
+      {
+        column: "name",
         value: "fake_name",
       },
-      email: {
+      {
+        column: "email",
         value: "fake_email",
       },
-      age: {
+      {
+        column: "age",
         value: 1,
         operator: ">",
       },
-      fingers: {
+      {
+        column: "fingers",
         value: 9,
         operator: "<=",
       },
-    };
+    ];
 
     const query = queryBuilder
       .table(tableName)
@@ -169,24 +182,27 @@ describe("QueryBuilder Class", () => {
       .where(whereProps)._query;
 
     expect(query).toBe(
-      "SELECT * FROM fake_table_name WHERE name='fake_name' AND email='fake_email' AND age > 1 AND fingers <= 9",
+      "SELECT * FROM fake_table_name WHERE name = 'fake_name' AND email = 'fake_email' AND age > 1 AND fingers <= 9",
     );
   });
 
   it("should return a SELECT query string with orderBy clause on queryBuilder.table.select._query", () => {
     const { queryBuilder } = makeSut();
     const tableName = "fake_table_name";
-    const whereProps = {
-      name: {
+    const whereProps = [
+      {
+        column: "name",
         value: "fake_name",
       },
-      email: {
+      {
+        column: "email",
         value: "fake_email",
       },
-      age: {
+      {
+        column: "age",
         value: 1,
       },
-    };
+    ];
     const orderByProps = [{ column: "name", orientation: "ASC" }];
 
     const query = queryBuilder
@@ -196,24 +212,27 @@ describe("QueryBuilder Class", () => {
       .orderBy(orderByProps)._query;
 
     expect(query).toBe(
-      "SELECT * FROM fake_table_name WHERE name='fake_name' AND email='fake_email' AND age=1 ORDER BY name ASC",
+      "SELECT * FROM fake_table_name WHERE name = 'fake_name' AND email = 'fake_email' AND age = 1 ORDER BY name ASC",
     );
   });
 
   it("should return a SELECT query string with multiple orderBy clauses on queryBuilder.table.select._query", () => {
     const { queryBuilder } = makeSut();
     const tableName = "fake_table_name";
-    const whereProps = {
-      name: {
+    const whereProps = [
+      {
+        column: "name",
         value: "fake_name",
       },
-      email: {
+      {
+        column: "email",
         value: "fake_email",
       },
-      age: {
+      {
+        column: "age",
         value: 1,
       },
-    };
+    ];
     const orderByProps = [
       { column: "name", orientation: "ASC" },
       { column: "email", orientation: "DESC" },
@@ -227,24 +246,27 @@ describe("QueryBuilder Class", () => {
       .orderBy(orderByProps)._query;
 
     expect(query).toBe(
-      "SELECT * FROM fake_table_name WHERE name='fake_name' AND email='fake_email' AND age=1 ORDER BY name ASC,email DESC,age ASC",
+      "SELECT * FROM fake_table_name WHERE name = 'fake_name' AND email = 'fake_email' AND age = 1 ORDER BY name ASC,email DESC,age ASC",
     );
   });
 
   it("should return a SELECT query string using having clause on queryBuilder.table.select._query", () => {
     const { queryBuilder } = makeSut();
     const tableName = "fake_table_name";
-    const whereProps = {
-      name: {
+    const whereProps = [
+      {
+        column: "name",
         value: "fake_name",
       },
-      email: {
+      {
+        column: "email",
         value: "fake_email",
       },
-      age: {
+      {
+        column: "age",
         value: 1,
       },
-    };
+    ];
     const havingProps = [{ field: "COUNT(id)", operator: ">", value: 1 }];
 
     const query = queryBuilder
@@ -254,24 +276,27 @@ describe("QueryBuilder Class", () => {
       .having(havingProps)._query;
 
     expect(query).toBe(
-      "SELECT * FROM fake_table_name WHERE name='fake_name' AND email='fake_email' AND age=1 HAVING COUNT(id) > 1",
+      "SELECT * FROM fake_table_name WHERE name = 'fake_name' AND email = 'fake_email' AND age = 1 HAVING COUNT(id) > 1",
     );
   });
 
   it("should return a SELECT query string using multiple having clause on queryBuilder.table.select._query", () => {
     const { queryBuilder } = makeSut();
     const tableName = "fake_table_name";
-    const whereProps = {
-      name: {
+    const whereProps = [
+      {
+        column: "name",
         value: "fake_name",
       },
-      email: {
+      {
+        column: "email",
         value: "fake_email",
       },
-      age: {
+      {
+        column: "age",
         value: 1,
       },
-    };
+    ];
     const havingProps = [
       { field: "COUNT(id)", operator: ">", value: 1 },
       { field: "COUNT(name)", operator: "<", value: 1 },
@@ -284,25 +309,29 @@ describe("QueryBuilder Class", () => {
       .where(whereProps)
       .having(havingProps)._query;
 
+    // TODO: Refatorar o having, colocar espaço no sinal de '-'
     expect(query).toBe(
-      "SELECT * FROM fake_table_name WHERE name='fake_name' AND email='fake_email' AND age=1 HAVING COUNT(id) > 1 AND COUNT(name) < 1 AND COUNT(age)=1",
+      "SELECT * FROM fake_table_name WHERE name = 'fake_name' AND email = 'fake_email' AND age = 1 HAVING COUNT(id) > 1 AND COUNT(name) < 1 AND COUNT(age)=1",
     );
   });
 
   it("should return a SELECT query string using limit clause on queryBuilder.table.select._query", () => {
     const { queryBuilder } = makeSut();
     const tableName = "fake_table_name";
-    const whereProps = {
-      name: {
+    const whereProps = [
+      {
+        column: "name",
         value: "fake_name",
       },
-      email: {
+      {
+        column: "email",
         value: "fake_email",
       },
-      age: {
+      {
+        column: "age",
         value: 1,
       },
-    };
+    ];
 
     const query = queryBuilder
       .table(tableName)
@@ -311,24 +340,27 @@ describe("QueryBuilder Class", () => {
       .limit(10)._query;
 
     expect(query).toBe(
-      "SELECT * FROM fake_table_name WHERE name='fake_name' AND email='fake_email' AND age=1 LIMIT 10",
+      "SELECT * FROM fake_table_name WHERE name = 'fake_name' AND email = 'fake_email' AND age = 1 LIMIT 10",
     );
   });
 
   it("should return a SELECT query string using offset clause on queryBuilder.table.select._query", () => {
     const { queryBuilder } = makeSut();
     const tableName = "fake_table_name";
-    const whereProps = {
-      name: {
+    const whereProps = [
+      {
+        column: "name",
         value: "fake_name",
       },
-      email: {
+      {
+        column: "email",
         value: "fake_email",
       },
-      age: {
+      {
+        column: "age",
         value: 1,
       },
-    };
+    ];
 
     const query = queryBuilder
       .table(tableName)
@@ -338,24 +370,27 @@ describe("QueryBuilder Class", () => {
       .offset(2)._query;
 
     expect(query).toBe(
-      "SELECT * FROM fake_table_name WHERE name='fake_name' AND email='fake_email' AND age=1 LIMIT 10 OFFSET 2",
+      "SELECT * FROM fake_table_name WHERE name = 'fake_name' AND email = 'fake_email' AND age = 1 LIMIT 10 OFFSET 2",
     );
   });
 
   it("should return a SELECT query string using group by clause on queryBuilder.table.select._query", () => {
     const { queryBuilder } = makeSut();
     const tableName = "fake_table_name";
-    const whereProps = {
-      name: {
+    const whereProps = [
+      {
+        column: "name",
         value: "fake_name",
       },
-      email: {
+      {
+        column: "email",
         value: "fake_email",
       },
-      age: {
+      {
+        column: "age",
         value: 1,
       },
-    };
+    ];
     const groupByProps = ["name", "email"];
 
     const query = queryBuilder
@@ -365,7 +400,7 @@ describe("QueryBuilder Class", () => {
       .groupBy(groupByProps)._query;
 
     expect(query).toBe(
-      "SELECT * FROM fake_table_name WHERE name='fake_name' AND email='fake_email' AND age=1 GROUP BY name,email",
+      "SELECT * FROM fake_table_name WHERE name = 'fake_name' AND email = 'fake_email' AND age = 1 GROUP BY name,email",
     );
   });
 
@@ -393,11 +428,20 @@ describe("QueryBuilder Class", () => {
       { column: "age", newValue: 12 },
       { column: "email", newValue: "new_fake_email" },
     ];
-    const whereProps = {
-      name: { value: "fake_name" },
-      email: { value: "fake_email" },
-      age: { value: 1 },
-    };
+    const whereProps = [
+      {
+        column: "name",
+        value: "fake_name",
+      },
+      {
+        column: "email",
+        value: "fake_email",
+      },
+      {
+        column: "age",
+        value: 1,
+      },
+    ];
 
     const query = queryBuilder
       .table(tableName)
@@ -405,7 +449,7 @@ describe("QueryBuilder Class", () => {
       .where(whereProps)._query;
 
     expect(query).toBe(
-      "UPDATE fake_table_name SET name = 'new_fake_name', age = 12, email = 'new_fake_email' WHERE name='fake_name' AND email='fake_email' AND age=1",
+      "UPDATE fake_table_name SET name = 'new_fake_name', age = 12, email = 'new_fake_email' WHERE name = 'fake_name' AND email = 'fake_email' AND age = 1",
     );
   });
 
@@ -421,11 +465,20 @@ describe("QueryBuilder Class", () => {
   it("should return a DELETE query string using where clauses on queryBuilder.table.delete._query", () => {
     const { queryBuilder } = makeSut();
     const tableName = "fake_table_name";
-    const whereProps = {
-      name: { value: "fake_name" },
-      email: { value: "fake_email" },
-      age: { value: 1 },
-    };
+    const whereProps = [
+      {
+        column: "name",
+        value: "fake_name",
+      },
+      {
+        column: "email",
+        value: "fake_email",
+      },
+      {
+        column: "age",
+        value: 1,
+      },
+    ];
 
     const query = queryBuilder
       .table(tableName)
@@ -433,18 +486,27 @@ describe("QueryBuilder Class", () => {
       .where(whereProps)._query;
 
     expect(query).toBe(
-      "DELETE FROM fake_table_name WHERE name='fake_name' AND email='fake_email' AND age=1",
+      "DELETE FROM fake_table_name WHERE name = 'fake_name' AND email = 'fake_email' AND age = 1",
     );
   });
 
   it("should return a SELECT query string using regular JOIN on queryBuilder.table.select.join._query", () => {
     const { queryBuilder } = makeSut();
     const tableName = "fake_table_name";
-    const whereProps = {
-      name: { value: "fake_name" },
-      email: { value: "fake_email" },
-      age: { value: 1 },
-    };
+    const whereProps = [
+      {
+        column: "name",
+        value: "fake_name",
+      },
+      {
+        column: "email",
+        value: "fake_email",
+      },
+      {
+        column: "age",
+        value: 1,
+      },
+    ];
     const joinProps = [
       {
         joinOrientation: "INNER JOIN",
@@ -462,18 +524,27 @@ describe("QueryBuilder Class", () => {
       .join(joinProps)._query;
 
     expect(query).toBe(
-      "SELECT * FROM fake_table_name WHERE name='fake_name' AND email='fake_email' AND age=1 INNER JOIN another_fake_table ON fake_table_name.id = another_fake_table.id",
+      "SELECT * FROM fake_table_name WHERE name = 'fake_name' AND email = 'fake_email' AND age = 1 INNER JOIN another_fake_table ON fake_table_name.id = another_fake_table.id",
     );
   });
 
   it("should return a SELECT query string using multiple JOINs on queryBuilder.table.select.join.join.join._query", () => {
     const { queryBuilder } = makeSut();
     const tableName = "fake_table_name";
-    const whereProps = {
-      name: { value: "fake_name" },
-      email: { value: "fake_email" },
-      age: { value: 1 },
-    };
+    const whereProps = [
+      {
+        column: "name",
+        value: "fake_name",
+      },
+      {
+        column: "email",
+        value: "fake_email",
+      },
+      {
+        column: "age",
+        value: 1,
+      },
+    ];
     const joinProps = [
       {
         joinOrientation: "LEFT JOIN",
@@ -505,21 +576,23 @@ describe("QueryBuilder Class", () => {
       .join(joinProps)._query;
 
     expect(query).toBe(
-      "SELECT * FROM fake_table_name WHERE name='fake_name' AND email='fake_email' AND age=1 LEFT JOIN another_fake_table_LEFT ON fake_table_name.id = another_fake_table_LEFT.id RIGHT JOIN another_fake_table_RIGHT ON fake_table_name.id > another_fake_table_RIGHT.id INNER JOIN another_fake_table_INNER ON fake_table_name.id <= another_fake_table_INNER.id",
+      "SELECT * FROM fake_table_name WHERE name = 'fake_name' AND email = 'fake_email' AND age = 1 LEFT JOIN another_fake_table_LEFT ON fake_table_name.id = another_fake_table_LEFT.id RIGHT JOIN another_fake_table_RIGHT ON fake_table_name.id > another_fake_table_RIGHT.id INNER JOIN another_fake_table_INNER ON fake_table_name.id <= another_fake_table_INNER.id",
     );
   });
 
   it("should return a SELECT query string using or operator on queryBuilder.table.select.orWhere._query", () => {
     const { queryBuilder } = makeSut();
     const tableName = "fake_table_name";
-    const whereProps = {
-      name: {
+    const whereProps = [
+      {
+        column: "name",
         value: "fake_name",
       },
-      email: {
+      {
+        column: "email",
         value: "fake_email",
       },
-    };
+    ];
     const orWhereProps = {
       age: {
         operator: ">",
@@ -537,21 +610,23 @@ describe("QueryBuilder Class", () => {
       .orWhere(orWhereProps)._query;
 
     expect(query).toBe(
-      "SELECT * FROM fake_table_name WHERE name='fake_name' AND email='fake_email' OR age > 1 OR name='fake_or_name'",
+      "SELECT * FROM fake_table_name WHERE name = 'fake_name' AND email = 'fake_email' OR age > 1 OR name='fake_or_name'",
     );
   });
 
   it("should return a SELECT query string using where and add or operator in it on queryBuilder.table.select.where.notWhere._query", () => {
     const { queryBuilder } = makeSut();
     const tableName = "fake_table_name";
-    const whereProps = {
-      name: {
+    const whereProps = [
+      {
+        column: "name",
         value: "fake_name",
       },
-      email: {
+      {
+        column: "email",
         value: "fake_email",
       },
-    };
+    ];
     const notWhereProps = {
       age: {
         operator: ">",
@@ -569,7 +644,7 @@ describe("QueryBuilder Class", () => {
       .notWhere(notWhereProps)._query;
 
     expect(query).toBe(
-      "SELECT * FROM fake_table_name WHERE name='fake_name' AND email='fake_email' NOT age > 1 AND NOT name='fake_or_name'",
+      "SELECT * FROM fake_table_name WHERE name = 'fake_name' AND email = 'fake_email' NOT age > 1 AND NOT name='fake_or_name'",
     );
   });
 
@@ -599,18 +674,21 @@ describe("QueryBuilder Class", () => {
   it("should return a SELECT query string using in operator on queryBuilder.table.select.where._query", () => {
     const { queryBuilder } = makeSut();
     const tableName = "fake_table_name";
-    const whereProps = {
-      name: {
+    const whereProps = [
+      {
+        column: "name",
         operator: "IN",
         value: ["fake_01", "fake_02", "fake_03"],
       },
-      email: {
+      {
+        column: "email",
         value: "fake_email",
       },
-      age: {
+      {
+        column: "age",
         value: 1,
       },
-    };
+    ];
 
     const query = queryBuilder
       .table(tableName)
@@ -618,25 +696,28 @@ describe("QueryBuilder Class", () => {
       .where(whereProps)._query;
 
     expect(query).toBe(
-      "SELECT * FROM fake_table_name WHERE name IN ('fake_01','fake_02','fake_03') AND email='fake_email' AND age=1",
+      "SELECT * FROM fake_table_name WHERE name IN ('fake_01','fake_02','fake_03') AND email = 'fake_email' AND age = 1",
     );
   });
 
   it("should return a SELECT query string using between operator on queryBuilder.table.select.where._query", () => {
     const { queryBuilder } = makeSut();
     const tableName = "fake_table_name";
-    const whereProps = {
-      name: {
+    const whereProps = [
+      {
+        column: "name",
         operator: "BETWEEN",
         value: ["fake_01", "fake_02"],
       },
-      email: {
+      {
+        column: "email",
         value: "fake_email",
       },
-      age: {
+      {
+        column: "age",
         value: 1,
       },
-    };
+    ];
 
     const query = queryBuilder
       .table(tableName)
@@ -644,7 +725,7 @@ describe("QueryBuilder Class", () => {
       .where(whereProps)._query;
 
     expect(query).toBe(
-      "SELECT * FROM fake_table_name WHERE name BETWEEN 'fake_01' AND 'fake_02' AND email='fake_email' AND age=1",
+      "SELECT * FROM fake_table_name WHERE name BETWEEN 'fake_01' AND 'fake_02' AND email = 'fake_email' AND age = 1",
     );
   });
 });
