@@ -328,12 +328,13 @@ describe("QueryBuilder PostgreSQL integration", () => {
   it("should return a list of users where not age === 25", async () => {
     const { queryBuilder, connection } = makeSut();
     const tableName = "users";
-    const notWhereProps = {
-      age: {
+    const notWhereProps = [
+      {
+        column: "age",
         operator: "=",
         value: 25,
       },
-    };
+    ];
     const query = queryBuilder
       .table(tableName)
       .select()

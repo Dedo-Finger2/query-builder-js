@@ -629,15 +629,17 @@ describe("QueryBuilder Class", () => {
         value: "fake_email",
       },
     ];
-    const notWhereProps = {
-      age: {
+    const notWhereProps = [
+      {
+        column: "age",
         operator: ">",
         value: 1,
       },
-      name: {
+      {
+        column: "name",
         value: "fake_or_name",
       },
-    };
+    ];
 
     const query = queryBuilder
       .table(tableName)
@@ -646,22 +648,24 @@ describe("QueryBuilder Class", () => {
       .notWhere(notWhereProps)._query;
 
     expect(query).toBe(
-      "SELECT * FROM fake_table_name WHERE name = 'fake_name' AND email = 'fake_email' NOT age > 1 AND NOT name='fake_or_name'",
+      "SELECT * FROM fake_table_name WHERE name = 'fake_name' AND email = 'fake_email' NOT age > 1 AND NOT name = 'fake_or_name'",
     );
   });
 
   it("should return a SELECT query string using only where not on queryBuilder.table.select.notWhere._query", () => {
     const { queryBuilder } = makeSut();
     const tableName = "fake_table_name";
-    const notWhereProps = {
-      age: {
+    const notWhereProps = [
+      {
+        column: "age",
         operator: ">",
         value: 1,
       },
-      name: {
+      {
+        column: "name",
         value: "fake_or_name",
       },
-    };
+    ];
 
     const query = queryBuilder
       .table(tableName)
@@ -669,7 +673,7 @@ describe("QueryBuilder Class", () => {
       .notWhere(notWhereProps)._query;
 
     expect(query).toBe(
-      "SELECT * FROM fake_table_name WHERE NOT age > 1 AND NOT name='fake_or_name'",
+      "SELECT * FROM fake_table_name WHERE NOT age > 1 AND NOT name = 'fake_or_name'",
     );
   });
 

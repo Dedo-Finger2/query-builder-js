@@ -134,32 +134,47 @@ export class QueryBuilder {
   }
 
   /**
-   * TODO: Continuar refatoração
-   * @param {Array} columnValuePairs
+   * @param {Array} columnOperatorValuePairs
    */
-  orWhere(columnValuePairs) {
-    const whereClause = columnValuePairs.map((columnOperatorValueObj) => {
-      const column = columnOperatorValueObj.column;
-      const value = columnOperatorValueObj.value;
-      const operator = this.#setDefaultOperator(
-        columnOperatorValueObj.operator,
-      );
-      return `${column}${operator}${this.#formatValue(value)}`;
-    });
+  orWhere(columnOperatorValuePairs) {
+    const whereClause = columnOperatorValuePairs.map(
+      (columnOperatorValueObj) => {
+        const column = columnOperatorValueObj.column;
+        const value = columnOperatorValueObj.value;
+        const operator = this.#setDefaultOperator(
+          columnOperatorValueObj.operator,
+        );
+        return `${column}${operator}${this.#formatValue(value)}`;
+      },
+    );
     this.queryString += ` OR ${whereClause.join(" OR ")}`;
     return this;
   }
 
-  notWhere(columnValuePairs) {
-    const columns = Object.keys(columnValuePairs);
-    const whereClause = columns.map((column) => {
-      const columnValue = columnValuePairs[column].value;
-      const isValueANumber = !Number.isNaN(Number(columnValue));
-      const columnOperator = columnValuePairs[column].operator
-        ? ` ${columnValuePairs[column].operator} `
-        : "=";
-      return `${column}${columnOperator}${isValueANumber ? columnValue : `'${columnValue}'`}`;
-    });
+  /**
+   * @param {Array} columnOperatorValuePairs
+   */
+  notWhere(columnOperatorValuePairs) {
+    const whereClause = columnOperatorValuePairs.map(
+      (columnOperatorValueObj) => {
+        const column = columnOperatorValueObj.column;
+        let value = columnOperatorValueObj.value;
+        const operator = this.#setDefaultOperator(
+          columnOperatorValueObj.operator,
+        );
+        const isValueAnArray = Array.isArray(value);
+        if (isValueAnArray) {
+          value = this.#handleArrayValueCases({ operator, value });
+          return `${column}${operator}${value}`;
+        }
+        return `${column}${operator}${this.#formatValue(value)}`;
+      },
+    );
+    this.#addWhereNotIfQueryDoesNotHaveWhereAlready({ whereClause });
+    return this;
+  }
+
+  #addWhereNotIfQueryDoesNotHaveWhereAlready({ whereClause }) {
     const queryStringDoesNotHaveWhereClause =
       !this.queryString.includes("WHERE");
     if (queryStringDoesNotHaveWhereClause) {
@@ -168,7 +183,6 @@ export class QueryBuilder {
       return this;
     }
     this.queryString += ` NOT ${whereClause.join(" AND NOT ")}`;
-    return this;
   }
 
   orderBy(columnOrientationPairs) {
