@@ -133,15 +133,18 @@ export class QueryBuilder {
     }
   }
 
+  /**
+   * TODO: Continuar refatoração
+   * @param {Array} columnValuePairs
+   */
   orWhere(columnValuePairs) {
-    const columns = Object.keys(columnValuePairs);
-    const whereClause = columns.map((column) => {
-      const columnValue = columnValuePairs[column].value;
-      const isValueANumber = !Number.isNaN(Number(columnValue));
-      const columnOperator = columnValuePairs[column].operator
-        ? ` ${columnValuePairs[column].operator} `
-        : "=";
-      return `${column}${columnOperator}${isValueANumber ? columnValue : `'${columnValue}'`}`;
+    const whereClause = columnValuePairs.map((columnOperatorValueObj) => {
+      const column = columnOperatorValueObj.column;
+      const value = columnOperatorValueObj.value;
+      const operator = this.#setDefaultOperator(
+        columnOperatorValueObj.operator,
+      );
+      return `${column}${operator}${this.#formatValue(value)}`;
     });
     this.queryString += ` OR ${whereClause.join(" OR ")}`;
     return this;

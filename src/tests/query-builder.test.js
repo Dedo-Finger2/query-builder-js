@@ -593,15 +593,17 @@ describe("QueryBuilder Class", () => {
         value: "fake_email",
       },
     ];
-    const orWhereProps = {
-      age: {
+    const orWhereProps = [
+      {
+        column: "age",
         operator: ">",
         value: 1,
       },
-      name: {
+      {
+        column: "name",
         value: "fake_or_name",
       },
-    };
+    ];
 
     const query = queryBuilder
       .table(tableName)
@@ -610,7 +612,7 @@ describe("QueryBuilder Class", () => {
       .orWhere(orWhereProps)._query;
 
     expect(query).toBe(
-      "SELECT * FROM fake_table_name WHERE name = 'fake_name' AND email = 'fake_email' OR age > 1 OR name='fake_or_name'",
+      "SELECT * FROM fake_table_name WHERE name = 'fake_name' AND email = 'fake_email' OR age > 1 OR name = 'fake_or_name'",
     );
   });
 
