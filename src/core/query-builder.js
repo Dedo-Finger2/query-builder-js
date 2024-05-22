@@ -109,7 +109,43 @@ export class QueryBuilder {
   }
 
   #setDefaultOperator(operator) {
-    return operator ? ` ${operator} ` : " = ";
+    if (!operator) return " = ";
+    switch (operator.trim().toUpperCase()) {
+      case "=":
+        return ` ${operator} `;
+      case ">":
+        return ` ${operator} `;
+      case "<":
+        return ` ${operator} `;
+      case ">=":
+        return ` ${operator} `;
+      case "<=":
+        return ` ${operator} `;
+      case "<>":
+        return ` ${operator} `;
+      case "AND":
+        return ` ${operator} `;
+      case "OR":
+        return ` ${operator} `;
+      case "NOT":
+        return ` ${operator} `;
+      case "BETWEEN":
+        return ` ${operator} `;
+      case "LIKE":
+        return ` ${operator} `;
+      case "IN":
+        return ` ${operator} `;
+      case "ALL":
+        return ` ${operator} `;
+      case "ANY":
+        return ` ${operator} `;
+      case "SOME":
+        return ` ${operator} `;
+      case "EXISTS":
+        return ` ${operator} `;
+      default:
+        throw new Error("Invalid operator in where clause.");
+    }
   }
 
   #handleArrayValueCases({ value, operator }) {
