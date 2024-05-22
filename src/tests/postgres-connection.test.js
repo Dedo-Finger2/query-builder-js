@@ -1,6 +1,6 @@
 /* eslint-disable no-undef */
 import { describe, expect, it } from "vitest";
-import { PostgresConnection } from "../core/postgres-connection";
+import { PostgresConnection } from "../integrations/postgres-connection.js";
 import "dotenv/config";
 
 const makeConnection = () => {
