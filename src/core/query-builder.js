@@ -81,45 +81,56 @@ export class QueryBuilder {
   }
 
   /**
-   *
    * @param {Array} columnOperatorValuePairsArray
-   * @returns
    */
   where(columnOperatorValuePairsArray) {
     const whereClause = columnOperatorValuePairsArray.map(
       (columnOperatorValueObj) => {
         const column = columnOperatorValueObj.column;
-        const operator = columnOperatorValueObj.operator
-          ? ` ${columnOperatorValueObj.operator} `
-          : " = ";
+        const operator = this.#setDefaultOperator(
+          columnOperatorValueObj.operator,
+        );
         let value = columnOperatorValueObj.value;
-        const isColumnsValueAnArray = Array.isArray(value);
-        const isValueANumber = !Number.isNaN(Number(value));
-        if (isColumnsValueAnArray && operator.trim() === "IN") {
-          value = `(${value
-            .map((column) => {
-              return !Number.isNaN(Number(column))
-                ? `${column}`
-                : `'${column}'`;
-            })
-            .join()})`;
+        const isValueAnArray = Array.isArray(value);
+        if (isValueAnArray) {
+          value = this.#handleArrayValueCases({ operator, value });
           return `${column}${operator}${value}`;
         }
-        if (isColumnsValueAnArray && operator.trim() === "BETWEEN") {
-          value = `${value
-            .map((column) => {
-              return !Number.isNaN(Number(column))
-                ? `${column}`
-                : `'${column}'`;
-            })
-            .join(" AND ")}`;
-          return `${column}${operator}${value}`;
-        }
-        return `${column}${operator}${isValueANumber ? value : `'${value}'`}`;
+        return `${column}${operator}${this.#formatValue(value)}`;
       },
     );
     this.queryString += ` WHERE ${whereClause.join(" AND ")}`;
     return this;
+  }
+
+  #formatValue(value) {
+    const isValueANumber = !Number.isNaN(Number(value));
+    return `${isValueANumber ? value : `'${value}'`}`;
+  }
+
+  #setDefaultOperator(operator) {
+    return operator ? ` ${operator} ` : " = ";
+  }
+
+  #handleArrayValueCases({ value, operator }) {
+    switch (operator.trim()) {
+      case "IN":
+        value = `(${value
+          .map((column) => {
+            return this.#formatValue(column);
+          })
+          .join()})`;
+        return `${value}`;
+      case "BETWEEN":
+        value = `${value
+          .map((column) => {
+            return this.#formatValue(column);
+          })
+          .join(" AND ")}`;
+        return `${value}`;
+      default:
+        throw new Error("Invalid Operator.");
+    }
   }
 
   orWhere(columnValuePairs) {
