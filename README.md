@@ -7,6 +7,10 @@ além de garantir confiança ao código, principalmente porque foi feito com Jav
 ## Tecnologias usadas
 
 - Vitest [ Biblioteca de testes automatizados ];
+- EsLint [ Biblioteca de linting ];
+- Prettier [ Biblioteca estilização e padronização de código ];
+- Husky [ Biblioteca execução de tarefas entre ações do Git ];
+- Pg [ Driver nativo do PostgreSQL ];
 
 ## Requisitos funcionais
 
@@ -20,6 +24,6 @@ além de garantir confiança ao código, principalmente porque foi feito com Jav
 
 ## Regras de negócio
 
-- [] Não deve ser possível criar uma query com operadores inválidos
-- [] Não deve ser possível construir uma query de ordenação que use quaisquer valor fora de ASC ou DESC
-- [] Não deve ser possível construir uma query usando operador LIKE que não use algum wildcard (%, _)
+- [x] Não deve ser possível criar uma query com operadores inválidos
+- [x] Não deve ser possível construir uma query de ordenação que use quaisquer valor fora de ASC ou DESC
+- [x] Não deve ser possível construir uma query usando operador LIKE que não use algum wildcard (%, _)
