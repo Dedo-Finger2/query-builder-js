@@ -318,9 +318,15 @@ export class QueryBuilder {
    * @returns {QueryBuilder}
    */
   orderBy(columnOrientationPairs) {
+    const possibleOrientations = ["ASC", "DESC"];
     this.queryString += " ORDER BY ";
     const defaultOrientation = "ASC";
     const orderByProps = columnOrientationPairs.map((order) => {
+      const invalidOrientation = !possibleOrientations.includes(
+        order.orientation,
+      );
+      if (invalidOrientation && order.orientation !== undefined)
+        throw new Error("Invalid orientation for ORDER BY.");
       return `${order.column} ${order?.orientation ? order?.orientation.toUpperCase() : defaultOrientation}`;
     });
     this.queryString += orderByProps.join();
