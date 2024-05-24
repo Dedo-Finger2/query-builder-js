@@ -96,6 +96,7 @@ export class QueryBuilder {
           value = this.#handleArrayValueCases({ operator, value });
           return `${column}${operator}${value}`;
         }
+        this.#handleValueUsingLikeOperator({ value, operator });
         return `${column}${operator}${this.#formatValue(value)}`;
       },
     );
@@ -166,6 +167,17 @@ export class QueryBuilder {
         return `${value}`;
       default:
         throw new Error("Invalid Operator.");
+    }
+  }
+
+  /**
+   * @param {{ value: string, operator: string }}
+   */
+  #handleValueUsingLikeOperator({ value, operator }) {
+    if (Array.isArray(value) || Number.isInteger(value)) return;
+    const valueHasNoWildcard = !value.includes("%") && !value.includes("_");
+    if (operator.trim().toUpperCase() === "LIKE" && valueHasNoWildcard) {
+      throw new Error("Invalid value using LIKE operator. Missing wildcard.");
     }
   }
 
