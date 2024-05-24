@@ -4,6 +4,7 @@ import postgresDriver from "pg";
 const { Pool } = postgresDriver;
 
 export class PostgresConnection extends Connection {
+  /** @type {Pool} */
   pool;
 
   constructor({ user, host, password, database, port, urlConnection }) {
@@ -30,6 +31,10 @@ export class PostgresConnection extends Connection {
     });
   }
 
+  /**
+   * @param {string} query
+   * @returns {Array}
+   */
   async query(query) {
     try {
       this.#createConnection();

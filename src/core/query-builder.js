@@ -1,9 +1,46 @@
+/* eslint-disable no-unused-vars */
+import { Connection } from "./connection";
+
+/**
+ * @typedef {Object} WhereColumnOperatorValueObj
+ * @property {string} column
+ * @property {string} [operator]
+ * @property {*} value
+ */
+/**
+ * @typedef {Object} UpdateColumnValueObj
+ * @property {string} column
+ * @property {string|number|boolean|Date} newValue
+ */
+/**
+ * @typedef {Object} JoinObj
+ * @property {string} joinOrientation
+ * @property {string} table
+ * @property {string} otherTableProperty
+ * @property {string} operator
+ * @property {string} thisTableProperty
+ */
+/**
+ * @typedef {Object} OrderByObj
+ * @property {string} column
+ * @property {string} orientation
+ */
+/**
+ * @typedef {Object} HavingObj
+ * @property {string} field
+ * @property {string} operator
+ * @property {*} value
+ */
+
 export class QueryBuilder {
   client;
   connection;
   tableName;
   queryString;
 
+  /**
+   * @param {{client: string, connection: Connection}}
+   */
   constructor({ client, connection }) {
     this.client = client;
     this.connection = connection;
@@ -11,11 +48,19 @@ export class QueryBuilder {
     this.queryString = "";
   }
 
+  /**
+   * @param {string} tableName
+   * @returns {QueryBuilder}
+   */
   table(tableName) {
     this.tableName = tableName;
     return this;
   }
 
+  /**
+   * @param {object} columnValuePairs
+   * @returns {QueryBuilder}
+   */
   insert(columnValuePairs) {
     const columns = Object.keys(columnValuePairs);
     const values = Object.values(columnValuePairs);
@@ -23,6 +68,10 @@ export class QueryBuilder {
     return this;
   }
 
+  /**
+   * @param {string} columns
+   * @returns {QueryBuilder}
+   */
   select(columns = "*") {
     switch (columns) {
       case Array.isArray(columns):
@@ -35,6 +84,10 @@ export class QueryBuilder {
     return this;
   }
 
+  /**
+   * @param {Array<UpdateColumnValueObj>} columnValuePairs
+   * @returns {QueryBuilder}
+   */
   update(columnValuePairs) {
     this.queryString = `UPDATE ${this.tableName} SET `;
     const updateProps = columnValuePairs.map((updateObj) => {
@@ -48,11 +101,18 @@ export class QueryBuilder {
     return this;
   }
 
+  /**
+   * @returns {QueryBuilder}
+   */
   delete() {
     this.queryString = `DELETE FROM ${this.tableName}`;
     return this;
   }
 
+  /**
+   * @param {Array<JoinObj>} joinProps
+   * @returns {QueryBuilder}
+   */
   join(joinProps) {
     joinProps.map((joinObj) => {
       this.#setJoinMethod(joinObj.joinOrientation);
@@ -61,6 +121,9 @@ export class QueryBuilder {
     return this;
   }
 
+  /**
+   * @param {string} input
+   */
   #setJoinMethod(input) {
     switch (input.toUpperCase()) {
       case "INNER JOIN":
@@ -81,7 +144,7 @@ export class QueryBuilder {
   }
 
   /**
-   * @param {Array} columnOperatorValuePairsArray
+   * @param {Array<WhereColumnOperatorValueObj>} columnOperatorValuePairsArray
    */
   where(columnOperatorValuePairsArray) {
     const whereClause = columnOperatorValuePairsArray.map(
@@ -104,11 +167,20 @@ export class QueryBuilder {
     return this;
   }
 
+  /**
+   * @param {string|number} value
+   * @returns {string}
+   */
   #formatValue(value) {
     const isValueANumber = !Number.isNaN(Number(value));
     return `${isValueANumber ? value : `'${value}'`}`;
   }
 
+  /**
+   *
+   * @param {string} operator
+   * @returns {string}
+   */
   #setDefaultOperator(operator) {
     if (!operator) return " = ";
     switch (operator.trim().toUpperCase()) {
@@ -149,6 +221,10 @@ export class QueryBuilder {
     }
   }
 
+  /**
+   * @param {{ value: *, operator: string }}
+   * @returns {string}
+   */
   #handleArrayValueCases({ value, operator }) {
     switch (operator.trim()) {
       case "IN":
@@ -182,7 +258,7 @@ export class QueryBuilder {
   }
 
   /**
-   * @param {Array} columnOperatorValuePairs
+   * @param {Array<WhereColumnOperatorValueObj>} columnOperatorValuePairs
    */
   orWhere(columnOperatorValuePairs) {
     const whereClause = columnOperatorValuePairs.map(
@@ -200,7 +276,7 @@ export class QueryBuilder {
   }
 
   /**
-   * @param {Array} columnOperatorValuePairs
+   * @param {Array<WhereColumnOperatorValueObj>} columnOperatorValuePairs
    */
   notWhere(columnOperatorValuePairs) {
     const whereClause = columnOperatorValuePairs.map(
@@ -222,6 +298,10 @@ export class QueryBuilder {
     return this;
   }
 
+  /**
+   * @param {{ whereClause: string }}
+   * @returns {QueryBuilder|void}
+   */
   #addWhereNotIfQueryDoesNotHaveWhereAlready({ whereClause }) {
     const queryStringDoesNotHaveWhereClause =
       !this.queryString.includes("WHERE");
@@ -233,6 +313,10 @@ export class QueryBuilder {
     this.queryString += ` NOT ${whereClause.join(" AND NOT ")}`;
   }
 
+  /**
+   * @param {Array<OrderByObj>} columnOrientationPairs
+   * @returns {QueryBuilder}
+   */
   orderBy(columnOrientationPairs) {
     this.queryString += " ORDER BY ";
     const defaultOrientation = "ASC";
@@ -243,6 +327,10 @@ export class QueryBuilder {
     return this;
   }
 
+  /**
+   * @param {Array<HavingObj>} fieldOperationValuePairs
+   * @returns {QueryBuilder}
+   */
   having(fieldOperationValuePairs) {
     this.queryString += " HAVING ";
     const havingProps = fieldOperationValuePairs.map((havingObj) => {
@@ -255,26 +343,40 @@ export class QueryBuilder {
     return this;
   }
 
+  /**
+   * @param {number} amount
+   * @returns {QueryBuilder}
+   */
   limit(amount) {
     this.queryString += ` LIMIT ${amount}`;
     return this;
   }
 
+  /**
+   * @param {number} amount
+   * @returns {QueryBuilder}
+   */
   offset(amount) {
     this.queryString += ` OFFSET ${amount}`;
     return this;
   }
 
+  /**
+   * @param {string} columns
+   * @returns {QueryBuilder}
+   */
   groupBy(columns) {
     this.queryString += " GROUP BY ";
     this.queryString += columns.join();
     return this;
   }
 
+  /** @returns {string} */
   get _table() {
     return this.tableName;
   }
 
+  /** @returns {string} */
   get _query() {
     return this.queryString;
   }
